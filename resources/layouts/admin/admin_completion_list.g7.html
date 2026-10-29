@@ -1,0 +1,13 @@
+<layout name="admin_completion_list" version="1.0.0" extends="_admin_base">
+  <meta title="$t:glitter-learning.admin.completions.title" description="$t:glitter-learning.admin.completions.description"/>
+  <permissions><permission>glitter-learning.records.read</permission></permissions>
+  <data-source id="completions" type="api" endpoint="/api/modules/glitter-learning/admin/completions" method="GET" :auto_fetch="true" :auth_required="true"><params page="{{query.page}}"/></data-source>
+  <slot name="content"><div class="admin-page-content-fluid"><page-header data-type="composite" title="$t:glitter-learning.admin.completions.title" description="$t:glitter-learning.admin.completions.description"><a href="/admin/learning/courses" class="btn btn-neutral"><span>$t:glitter-learning.admin.courses.back_to_list</span></a></page-header><div class="admin-card">
+    <empty-state data-type="composite" data-if="{{completions !== undefined &amp;&amp; (completions?.data?.data ?? []).length === 0}}" iconName="award" title="$t:glitter-learning.admin.completions.empty_title" description="$t:glitter-learning.admin.completions.empty_description" class="py-12"/>
+    <data-grid data-if="{{(completions?.data?.data ?? []).length > 0}}" data-type="composite" :data-blur-until-loaded="true" data="{{completions?.data?.data ?? []}}" idField="id" :responsiveBreakpoint="768" emptyMessage="" :pagination="true" :serverSidePagination="true" serverCurrentPage="{{completions?.data?.current_page ?? 1}}" serverTotalPages="{{completions?.data?.last_page ?? 1}}" pageHref="/admin/learning/completions?page={page}">
+      <column field="course.title" header="$t:glitter-learning.admin.completions.course"><cell><span class="font-medium">{{row.course?.title ?? ''}}</span></cell></column>
+      <column field="user" header="$t:glitter-learning.admin.completions.user"><cell><span>{{row.enrollment?.user?.nickname || row.enrollment?.user?.name || ''}}</span></cell></column>
+      <column field="required_lessons_count" header="$t:glitter-learning.admin.completions.required_lessons"/><column field="completed_at" header="$t:glitter-learning.admin.completions.completed_at"><cell><span>{{row.completed_at | datetime | default('-')}}</span></cell></column>
+    </data-grid>
+  </div></div></slot>
+</layout>

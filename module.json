@@ -1,0 +1,37 @@
+{
+    "identifier": "glitter-learning",
+    "vendor": "Glitter.kr",
+    "name": {
+        "ko": "Glitter Learning",
+        "en": "Glitter Learning"
+    },
+    "version": "1.2.13",
+    "license": "MIT",
+    "description": {
+        "ko": "강좌, 차시, 수강 진도와 수료 이력을 관리하는 학습 모듈",
+        "en": "Learning management for courses, lessons, progress, and completions"
+    },
+    "g7_version": ">=7.1.1",
+    "dependencies": {
+        "modules": {},
+        "plugins": {
+            "sirsoft-ckeditor5": ">=1.1.1"
+        }
+    },
+    "github_url": null,
+    "github_changelog_url": null,
+    "assets": {
+        "js": {
+            "entry": "resources/js/index.ts",
+            "output": "dist/js/module.iife.js"
+        },
+        "css": {
+            "entry": "resources/css/main.css",
+            "output": "dist/css/module.css"
+        }
+    },
+    "loading": {
+        "strategy": "global",
+        "priority": 100
+    }
+}

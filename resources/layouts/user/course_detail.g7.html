@@ -1,0 +1,37 @@
+<layout name="course_detail" version="1.0.6" extends="_user_base">
+  <meta title="$t:glitter-learning.user.courses.detail"/>
+  <data-source id="courseData" type="api" endpoint="/api/modules/glitter-learning/learning/courses/{{route.course}}" method="GET" :auto_fetch="true" auth_mode="optional" loading_strategy="blocking"/>
+  <slot name="content"><div class="glitter-learning-user-shell" role="main">
+    <div class="glitter-learning-user-page-header"><div><h1>{{courseData?.data?.course?.title ?? '$t:glitter-learning.user.courses.detail'}}</h1><p>{{courseData?.data?.course?.introduction ?? ''}}</p></div><a href="/learning" class="glitter-learning-user-button"><span>$t:glitter-learning.common.back</span></a></div>
+    <div class="glitter-learning-user-split">
+      <div class="glitter-learning-user-card" aria-labelledby="course-overview-heading">
+        <h2 id="course-overview-heading">$t:glitter-learning.user.courses.course_information</h2>
+        <img data-if="{{courseData?.data?.course?.thumbnail_url}}" class="glitter-learning-user-course-thumbnail" src="{{courseData?.data?.course?.thumbnail_url}}" alt="{{courseData?.data?.course?.title}}" />
+        <div class="glitter-learning-user-content"><html-content data-type="composite" content="{{courseData?.data?.course?.description ?? ''}}" isHtml="{{courseData?.data?.course?.description_mode === 'html'}}"/></div>
+      </div>
+      <div class="glitter-learning-user-card" aria-labelledby="course-enrollment-heading">
+        <h2 id="course-enrollment-heading">$t:glitter-learning.user.courses.enrollment_title</h2>
+        <div data-if="{{courseData?.data?.enrollment &amp;&amp; courseData?.data?.enrollment?.status !== 'cancelled'}}" class="glitter-learning-user-stack">
+          <span class="glitter-learning-user-badge">{{courseData?.data?.enrollment?.status === 'completed' ? $t('glitter-learning.user.courses.enrollment_completed') : $t('glitter-learning.user.courses.enrollment_active')}}</span>
+          <p>$t:glitter-learning.user.my_learning.progress: {{courseData?.data?.progress?.progress_percent ?? 0}}%</p>
+          <div class="glitter-learning-progress" role="progressbar" aria-valuenow="{{courseData?.data?.progress?.progress_percent ?? 0}}" aria-valuemin="0" aria-valuemax="100"><span>{{courseData?.data?.progress?.progress_percent ?? 0}}%</span></div>
+          <a data-if="{{(courseData?.data?.lessons ?? []).length > 0}}" href="/learning/courses/{{route.course}}/lessons/{{courseData?.data?.lessons?.[0]?.id}}" class="glitter-learning-user-button"><span>$t:glitter-learning.user.courses.continue_learning</span></a>
+        </div>
+        <button data-if="{{!courseData?.data?.enrollment || courseData?.data?.enrollment?.status === 'cancelled'}}" type="button" :lockRepeatClick="true" class="glitter-learning-user-button">
+          <on type="click"><api-call :auth_required="true" target="/api/modules/glitter-learning/learning/courses/{{route.course}}/enroll" method="POST"><success><toast type="success" message="$t:glitter-learning.user.courses.enrolled"/><refetch-data-source dataSourceId="courseData"/></success><fail><toast type="error" message="{{error.message ?? '$t:glitter-learning.common.request_failed'}}"/></fail></api-call></on>
+          <span>$t:glitter-learning.user.courses.enroll</span>
+        </button>
+      </div>
+    </div>
+    <div class="glitter-learning-user-detail-card" aria-labelledby="course-details-heading">
+      <h2 id="course-details-heading">$t:glitter-learning.user.courses.course_details</h2>
+      <div class="glitter-learning-user-detail-grid">
+        <div data-if="{{courseData?.data?.course?.learning_objectives?.length > 0}}"><span class="glitter-learning-user-detail-label">$t:glitter-learning.user.courses.learning_objectives</span><ul class="glitter-learning-user-objectives"><li data-each="objective in {{courseData?.data?.course?.learning_objectives ?? []}}">{{objective}}</li></ul></div>
+        <div data-if="{{courseData?.data?.course?.prerequisites}}"><span class="glitter-learning-user-detail-label">$t:glitter-learning.user.courses.prerequisites</span><p>{{courseData?.data?.course?.prerequisites}}</p></div>
+        <div data-if="{{courseData?.data?.course?.target_audience}}"><span class="glitter-learning-user-detail-label">$t:glitter-learning.user.courses.target_audience</span><p>{{courseData?.data?.course?.target_audience}}</p></div>
+        <div data-if="{{courseData?.data?.course?.estimated_minutes !== null &amp;&amp; courseData?.data?.course?.estimated_minutes !== undefined}}"><span class="glitter-learning-user-detail-label">$t:glitter-learning.user.courses.estimated_minutes</span><p>$t:glitter-learning.user.courses.minutes|count={{courseData?.data?.course?.estimated_minutes}}</p></div>
+      </div>
+    </div>
+      <div class="glitter-learning-user-card" aria-labelledby="course-curriculum-heading"><h2 id="course-curriculum-heading">$t:glitter-learning.user.courses.curriculum</h2><p>$t:glitter-learning.user.courses.curriculum_description</p><div data-if="{{courseData !== undefined &amp;&amp; (courseData?.data?.lessons ?? []).length === 0}}" class="glitter-learning-user-empty"><h3>$t:glitter-learning.admin.lessons.empty_title</h3><p>$t:glitter-learning.admin.lessons.empty_description</p></div><ul data-if="{{(courseData?.data?.lessons ?? []).length > 0}}" class="glitter-learning-user-list"><li data-each="lesson in {{courseData?.data?.lessons ?? []}}"><div><span class="glitter-learning-user-lesson-title">{{lesson.sort_order}}. {{lesson.title}}</span><span class="glitter-learning-user-badge">{{lesson.is_required ? $t('glitter-learning.user.lessons.required') : $t('glitter-learning.user.lessons.optional')}}</span></div><a data-if="{{courseData?.data?.enrollment &amp;&amp; courseData?.data?.enrollment?.status !== 'cancelled'}}" href="/learning/courses/{{route.course}}/lessons/{{lesson.id}}"><span>$t:glitter-learning.user.courses.continue_learning</span></a></li></ul></div>
+  </div></slot>
+</layout>

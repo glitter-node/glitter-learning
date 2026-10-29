@@ -1,0 +1,1163 @@
+{
+    "version": "1.0.2",
+    "layout_name": "admin_course_form",
+    "extends": "_admin_base",
+    "meta": {
+        "title": "{{route?.course ? '$t:glitter-learning.admin.courses.edit' : '$t:glitter-learning.admin.courses.create'}}"
+    },
+    "data_sources": [
+        {
+            "id": "courseData",
+            "type": "api",
+            "endpoint": "/api/modules/glitter-learning/admin/courses/{{route.course}}",
+            "method": "GET",
+            "auto_fetch": true,
+            "auth_required": true,
+            "if": "{{route.course}}",
+            "initLocal": "form",
+            "loading_strategy": "blocking",
+            "refetchOnMount": true
+        }
+    ],
+    "initLocal": {
+        "form": {
+            "title": "",
+            "slug": "",
+            "introduction": "",
+            "description": "",
+            "description_mode": "html",
+            "category": "",
+            "difficulty": "",
+            "thumbnail_attachment_id": null,
+            "thumbnail_file": null,
+            "learning_objectives": [],
+            "prerequisites": "",
+            "target_audience": "",
+            "estimated_minutes": null,
+            "status": "draft",
+            "published_at": null
+        },
+        "errors": null,
+        "isSaving": false,
+        "preview": null
+    },
+    "permissions": [
+        "glitter-learning.courses.read"
+    ],
+    "slots": {
+        "content": [
+            {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                    "className": "admin-page-content"
+                },
+                "children": [
+                    {
+                        "type": "composite",
+                        "name": "PageHeader",
+                        "props": {
+                            "title": "{{route?.course ? '$t:glitter-learning.admin.courses.edit' : '$t:glitter-learning.admin.courses.create'}}"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/admin/learning/courses",
+                                    "className": "btn btn-neutral"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.admin.courses.cancel"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "admin-card"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "row-stack gap-6"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Section",
+                                        "props": {
+                                            "className": "row-stack gap-4",
+                                            "aria-labelledby": "course-basic-information"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "course-basic-information",
+                                                    "className": "section-heading"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.basic_information"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-title"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "text": "$t:glitter-learning.admin.courses.title_field"
+                                                            },
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "props": {
+                                                                    "className": "text-red-600",
+                                                                    "aria-hidden": "true"
+                                                                },
+                                                                "text": "*"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Input",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.title": "{{$event.target.value}}",
+                                                                    "errors.title": "{{null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-title",
+                                                            "className": "{{_local.errors?.title ? 'border-red-500' : ''}}",
+                                                            "aria-required": "true",
+                                                            "aria-invalid": "{{!!_local.errors?.title}}",
+                                                            "value": "{{_local.form?.title ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.title}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.title?.[0] ?? _local.errors?.title}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-slug"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "text": "$t:glitter-learning.admin.courses.slug"
+                                                            },
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "props": {
+                                                                    "className": "text-red-600",
+                                                                    "aria-hidden": "true"
+                                                                },
+                                                                "text": "*"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Input",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.slug": "{{$event.target.value}}",
+                                                                    "errors.slug": "{{null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-slug",
+                                                            "className": "{{_local.errors?.slug ? 'border-red-500' : ''}}",
+                                                            "aria-required": "true",
+                                                            "aria-invalid": "{{!!_local.errors?.slug}}",
+                                                            "placeholder": "$t:glitter-learning.admin.courses.slug_example",
+                                                            "value": "{{_local.form?.slug ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.slug_hint"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.slug}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.slug?.[0] ?? _local.errors?.slug}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-introduction"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.introduction"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Textarea",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.introduction": "{{$event.target.value}}",
+                                                                    "errors.introduction": "{{null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-introduction",
+                                                            "rows": 3,
+                                                            "value": "{{_local.form?.introduction ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.introduction}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.introduction?.[0] ?? _local.errors?.introduction}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-category"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.category"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Select",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.category": "{{$event.target.value || null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-category",
+                                                            "value": "{{_local.form?.category ?? ''}}",
+                                                            "options": [
+                                                                {
+                                                                    "value": "",
+                                                                    "label": "$t:glitter-learning.admin.courses.not_selected"
+                                                                },
+                                                                {
+                                                                    "value": "web-development",
+                                                                    "label": "$t:glitter-learning.admin.courses.category_web"
+                                                                },
+                                                                {
+                                                                    "value": "programming",
+                                                                    "label": "$t:glitter-learning.admin.courses.category_programming"
+                                                                },
+                                                                {
+                                                                    "value": "design",
+                                                                    "label": "$t:glitter-learning.admin.courses.category_design"
+                                                                },
+                                                                {
+                                                                    "value": "general",
+                                                                    "label": "$t:glitter-learning.admin.courses.category_general"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.category}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.category?.[0] ?? _local.errors?.category}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-difficulty"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.difficulty"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Select",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.difficulty": "{{$event.target.value || null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-difficulty",
+                                                            "value": "{{_local.form?.difficulty ?? ''}}",
+                                                            "options": [
+                                                                {
+                                                                    "value": "",
+                                                                    "label": "$t:glitter-learning.admin.courses.not_selected"
+                                                                },
+                                                                {
+                                                                    "value": "introductory",
+                                                                    "label": "$t:glitter-learning.admin.courses.difficulty_introductory"
+                                                                },
+                                                                {
+                                                                    "value": "beginner",
+                                                                    "label": "$t:glitter-learning.admin.courses.difficulty_beginner"
+                                                                },
+                                                                {
+                                                                    "value": "intermediate",
+                                                                    "label": "$t:glitter-learning.admin.courses.difficulty_intermediate"
+                                                                },
+                                                                {
+                                                                    "value": "advanced",
+                                                                    "label": "$t:glitter-learning.admin.courses.difficulty_advanced"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.difficulty}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.difficulty?.[0] ?? _local.errors?.difficulty}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "props": {
+                                                            "className": "form-label"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.thumbnail"
+                                                    },
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "FileUploader",
+                                                        "actions": [
+                                                            {
+                                                                "event": "onUploadComplete",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.thumbnail_attachment_id": "{{$args[0]?.[0]?.id ?? null}}",
+                                                                    "form.thumbnail_file": "{{$args[0]?.[0] ?? null}}"
+                                                                }
+                                                            },
+                                                            {
+                                                                "event": "onRemove",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.thumbnail_attachment_id": "{{null}}",
+                                                                    "form.thumbnail_file": "{{null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "collection": "course_thumbnail",
+                                                            "maxFiles": 1,
+                                                            "maxSize": 10,
+                                                            "accept": ".jpg,.jpeg,.png,.webp,.gif",
+                                                            "initialFiles": "{{_local.form?.thumbnail_file ? [_local.form.thumbnail_file] : []}}",
+                                                            "autoUpload": true,
+                                                            "confirmBeforeRemove": false,
+                                                            "uploadParams": {
+                                                                "source_type": "module",
+                                                                "source_identifier": "glitter-learning"
+                                                            },
+                                                            "apiEndpoints": {
+                                                                "upload": "/api/admin/attachments",
+                                                                "delete": "",
+                                                                "reorder": ""
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.thumbnail_hint"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.thumbnail_attachment_id}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.thumbnail_attachment_id?.[0] ?? _local.errors?.thumbnail_attachment_id}}"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Section",
+                                        "props": {
+                                            "className": "row-stack gap-4 border-t border-gray-200 pt-6 dark:border-gray-700",
+                                            "aria-labelledby": "course-design-information"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "course-design-information",
+                                                    "className": "section-heading"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.design_information"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-objectives"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.learning_objectives"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Textarea",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.learning_objectives": "{{$event.target.value.split('\\n').map(item => item.trim()).filter(Boolean)}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-objectives",
+                                                            "rows": 5,
+                                                            "value": "{{(_local.form?.learning_objectives ?? []).join('\\n')}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.objectives_hint"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.learning_objectives}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.learning_objectives?.[0] ?? _local.errors?.learning_objectives}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-prerequisites"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.prerequisites"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Textarea",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.prerequisites": "{{$event.target.value}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-prerequisites",
+                                                            "rows": 3,
+                                                            "value": "{{_local.form?.prerequisites ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.prerequisites}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.prerequisites?.[0] ?? _local.errors?.prerequisites}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-audience"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.target_audience"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Textarea",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.target_audience": "{{$event.target.value}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-audience",
+                                                            "rows": 3,
+                                                            "value": "{{_local.form?.target_audience ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.target_audience}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.target_audience?.[0] ?? _local.errors?.target_audience}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-minutes"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.estimated_minutes"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Input",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.estimated_minutes": "{{$event.target.value === '' ? null : Number($event.target.value)}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-minutes",
+                                                            "type": "number",
+                                                            "min": "0",
+                                                            "step": "1",
+                                                            "value": "{{_local.form?.estimated_minutes ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.estimated_minutes}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.estimated_minutes?.[0] ?? _local.errors?.estimated_minutes}}"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Section",
+                                        "props": {
+                                            "className": "row-stack gap-4 border-t border-gray-200 pt-6 dark:border-gray-700",
+                                            "aria-labelledby": "course-content-information"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "course-content-information",
+                                                    "className": "section-heading"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.content_information"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "props": {
+                                                            "className": "form-label"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.description_field"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "flex items-center gap-2 mb-3"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Input",
+                                                                "actions": [
+                                                                    {
+                                                                        "type": "change",
+                                                                        "handler": "setState",
+                                                                        "params": {
+                                                                            "target": "local",
+                                                                            "form.description_mode": "{{$event.target.checked ? 'html' : 'text'}}",
+                                                                            "preview": null
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "props": {
+                                                                    "type": "checkbox",
+                                                                    "className": "checkbox",
+                                                                    "checked": "{{_local.form?.description_mode === 'html'}}",
+                                                                    "aria-label": "$t:glitter-learning.admin.courses.use_rich_editor"
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "props": {
+                                                                    "className": "text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                                },
+                                                                "text": "$t:glitter-learning.admin.courses.use_rich_editor"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "id": "description_editor",
+                                                        "type": "extension_point",
+                                                        "name": "html_editor",
+                                                        "if": "{{_local.form?.description_mode === 'html'}}",
+                                                        "props": {
+                                                            "content": "{{_local.form?.description ?? ''}}",
+                                                            "isHtml": true,
+                                                            "rows": 10,
+                                                            "showHtmlModeToggle": false,
+                                                            "name": "description"
+                                                        },
+                                                        "default": [
+                                                            {
+                                                                "type": "composite",
+                                                                "name": "HtmlEditor",
+                                                                "actions": [
+                                                                    {
+                                                                        "type": "change",
+                                                                        "handler": "setState",
+                                                                        "params": {
+                                                                            "target": "local",
+                                                                            "form.description": "{{$event.target.value}}",
+                                                                            "preview": null
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "props": {
+                                                                    "name": "description",
+                                                                    "content": "{{_local.form?.description ?? ''}}",
+                                                                    "isHtml": true,
+                                                                    "rows": 10,
+                                                                    "showHtmlModeToggle": false
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "HtmlEditor",
+                                                        "if": "{{_local.form?.description_mode !== 'html'}}",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.description": "{{$event.target.value}}",
+                                                                    "preview": null
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "name": "description",
+                                                            "content": "{{_local.form?.description ?? ''}}",
+                                                            "isHtml": false,
+                                                            "rows": 10,
+                                                            "showHtmlModeToggle": false
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.description}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.description?.[0] ?? _local.errors?.description}}"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.description_policy_hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Button",
+                                                "actions": [
+                                                    {
+                                                        "type": "click",
+                                                        "handler": "apiCall",
+                                                        "target": "/api/modules/glitter-learning/admin/courses/preview",
+                                                        "auth_required": true,
+                                                        "params": {
+                                                            "method": "POST",
+                                                            "body": "{{_local.form}}"
+                                                        },
+                                                        "onSuccess": {
+                                                            "handler": "setState",
+                                                            "params": {
+                                                                "target": "local",
+                                                                "preview": "{{response.data?.data ?? response.data}}"
+                                                            }
+                                                        },
+                                                        "onError": {
+                                                            "handler": "toast",
+                                                            "params": {
+                                                                "type": "error",
+                                                                "message": "$t:glitter-learning.common.request_failed"
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+                                                "props": {
+                                                    "type": "button",
+                                                    "className": "btn btn-neutral"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "text": "$t:glitter-learning.admin.courses.preview"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "if": "{{_local.preview !== null}}",
+                                                "props": {
+                                                    "className": "rounded border border-gray-200 p-4 dark:border-gray-700"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "HtmlContent",
+                                                        "props": {
+                                                            "content": "{{_local.preview?.description ?? ''}}",
+                                                            "isHtml": "{{_local.preview?.description_mode === 'html'}}"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "A",
+                                                "if": "{{route?.course}}",
+                                                "props": {
+                                                    "href": "/admin/learning/courses/{{route.course}}",
+                                                    "className": "btn btn-neutral"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "text": "$t:glitter-learning.admin.courses.manage_lessons"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "P",
+                                                "if": "{{!route?.course}}",
+                                                "props": {
+                                                    "className": "text-sm text-gray-500 dark:text-gray-400"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.add_lessons_after_save"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Section",
+                                        "props": {
+                                            "className": "row-stack gap-4 border-t border-gray-200 pt-6 dark:border-gray-700",
+                                            "aria-labelledby": "course-publication-information"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "course-publication-information",
+                                                    "className": "section-heading"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.publication_information"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-status"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.status"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Select",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.status": "{{$event.target.value}}",
+                                                                    "errors.status": "{{null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-status",
+                                                            "value": "{{_local.form?.status ?? 'draft'}}",
+                                                            "options": [
+                                                                {
+                                                                    "value": "draft",
+                                                                    "label": "$t:glitter-learning.admin.courses.draft"
+                                                                },
+                                                                {
+                                                                    "value": "published",
+                                                                    "label": "$t:glitter-learning.admin.courses.published"
+                                                                },
+                                                                {
+                                                                    "value": "archived",
+                                                                    "label": "$t:glitter-learning.admin.courses.archived"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.status}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.status?.[0] ?? _local.errors?.status}}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "glitter-learning-course-published-at"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.published_at"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Input",
+                                                        "actions": [
+                                                            {
+                                                                "type": "change",
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "form.published_at": "{{$event.target.value || null}}",
+                                                                    "errors.published_at": "{{null}}"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "id": "glitter-learning-course-published-at",
+                                                            "type": "datetime-local",
+                                                            "value": "{{_local.form?.published_at ?? ''}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.published_at_hint"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "if": "{{_local.errors?.published_at}}",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-red-600"
+                                                        },
+                                                        "text": "{{_local.errors?.published_at?.[0] ?? _local.errors?.published_at}}"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "flex flex-wrap justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "A",
+                                                "props": {
+                                                    "href": "/admin/learning/courses",
+                                                    "className": "btn btn-neutral"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "text": "$t:glitter-learning.common.cancel"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Button",
+                                                "actions": [
+                                                    {
+                                                        "type": "click",
+                                                        "handler": "sequence",
+                                                        "actions": [
+                                                            {
+                                                                "handler": "setState",
+                                                                "params": {
+                                                                    "target": "local",
+                                                                    "isSaving": true,
+                                                                    "errors": null
+                                                                }
+                                                            },
+                                                            {
+                                                                "handler": "apiCall",
+                                                                "target": "{{route?.course ? '/api/modules/glitter-learning/admin/courses/' + route.course : '/api/modules/glitter-learning/admin/courses'}}",
+                                                                "auth_required": true,
+                                                                "params": {
+                                                                    "method": "{{route?.course ? 'PUT' : 'POST'}}",
+                                                                    "body": "{{_local.form}}"
+                                                                },
+                                                                "onSuccess": [
+                                                                    {
+                                                                        "handler": "setState",
+                                                                        "params": {
+                                                                            "target": "local",
+                                                                            "isSaving": false
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "handler": "toast",
+                                                                        "params": {
+                                                                            "type": "success",
+                                                                            "message": "$t:glitter-learning.admin.courses.saved"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "handler": "navigate",
+                                                                        "params": {
+                                                                            "path": "/admin/learning/courses/{{route?.course ?? response.data.slug}}"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "onError": [
+                                                                    {
+                                                                        "handler": "setState",
+                                                                        "params": {
+                                                                            "target": "local",
+                                                                            "isSaving": false,
+                                                                            "errors": "{{error.errors ?? null}}"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "handler": "toast",
+                                                                        "params": {
+                                                                            "type": "error",
+                                                                            "message": "{{error.message ?? '$t:glitter-learning.common.save_failed'}}"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "props": {
+                                                    "type": "button",
+                                                    "lockRepeatClick": true,
+                                                    "className": "btn btn-primary",
+                                                    "disabled": "{{_local.isSaving}}"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "text": "{{_local.isSaving ? '$t:glitter-learning.admin.courses.saving' : '$t:glitter-learning.admin.courses.save'}}"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

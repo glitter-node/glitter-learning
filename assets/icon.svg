@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Glitter Learning</title>
+  <desc id="desc">Open book with a rising learning path and a four-point sparkle</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#182E65"/>
+      <stop offset="1" stop-color="#49329C"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DDEAFF"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <circle cx="256" cy="248" r="172" fill="#FFFFFF" opacity=".055"/>
+  <path d="M256 209c-42-31-98-39-164-23v179c64-16 120-8 164 24 44-32 100-40 164-24V186c-66-16-122-8-164 23Z" fill="url(#page)"/>
+  <path d="M256 209v180" fill="none" stroke="#A9BDE5" stroke-width="10" stroke-linecap="round"/>
+  <path d="M114 215c49-7 87 0 119 19M114 252c49-7 87 0 119 19M114 289c49-7 87 0 119 19" fill="none" stroke="#8DA7D8" stroke-width="11" stroke-linecap="round" opacity=".75"/>
+  <path d="M279 301l38-41 31 22 45-58" fill="none" stroke="#4C50BB" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m393 224-2 31m2-31-31 5" fill="none" stroke="#4C50BB" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M354 105c7 31 19 43 50 50-31 7-43 19-50 50-7-31-19-43-50-50 31-7 43-19 50-50Z" fill="#F9CD69"/>
+  <circle cx="294" cy="121" r="8" fill="#F9CD69"/>
+  <circle cx="415" cy="109" r="6" fill="#F9CD69"/>
+  <path d="M96 385c63-14 117-7 160 23 43-30 97-37 160-23" fill="none" stroke="#7EA2E6" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+</svg>

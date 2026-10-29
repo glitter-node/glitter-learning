@@ -1,0 +1,184 @@
+<layout name="admin_course_detail" version="1.0.1" extends="_admin_base">
+  <meta title="$t:glitter-learning.admin.courses.detail"/>
+  <permissions><permission>glitter-learning.courses.read</permission></permissions>
+  <data-source id="courseData" type="api" endpoint="/api/modules/glitter-learning/admin/courses/{{route.course}}" method="GET" :auto_fetch="true" :auth_required="true"/>
+  <data-source id="enrollments" type="api" endpoint="/api/modules/glitter-learning/admin/courses/{{route.course}}/enrollments" method="GET" :auto_fetch="true" :auth_required="true"/>
+  <slot name="content">
+    <div class="admin-page-content-fluid">
+      <page-header data-type="composite" title="{{courseData?.data?.title ?? '$t:glitter-learning.admin.courses.detail'}}" description="{{courseData?.data?.introduction ?? ''}}">
+        <a href="/admin/learning/courses" class="btn btn-neutral"><span>$t:glitter-learning.admin.courses.back_to_list</span></a>
+        <a href="/admin/learning/courses/{{route.course}}/edit" class="btn btn-neutral"><span>$t:glitter-learning.common.edit</span></a>
+        <a href="/admin/learning/courses/{{route.course}}/lessons/create" class="btn btn-primary"><span>$t:glitter-learning.admin.lessons.create</span></a>
+      </page-header>
+
+      <div class="grid gap-6">
+        <section class="admin-card" aria-labelledby="course-summary-heading">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 id="course-summary-heading" class="section-heading">$t:glitter-learning.admin.courses.basic_information</h2>
+            <status-badge data-type="composite" status="{{courseData?.data?.status === 'published' ? 'success' : (courseData?.data?.status === 'archived' ? 'default' : 'warning')}}" label="{{courseData?.data?.status === 'published' ? $t('glitter-learning.admin.courses.published') : (courseData?.data?.status === 'archived' ? $t('glitter-learning.admin.courses.archived') : $t('glitter-learning.admin.courses.draft'))}}" :showIcon="false"/>
+          </div>
+          <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <div>
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.slug</span>
+              <div class="mt-1"><code>{{courseData?.data?.slug ?? ''}}</code></div>
+            </div>
+            <div>
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.published_at</span>
+              <div class="mt-1">{{courseData?.data?.published_at | datetime | default('-')}}</div>
+            </div>
+          </div>
+          <div data-if="{{courseData?.data?.description}}" class="mt-5 text-gray-700 dark:text-gray-300"><html-content data-type="composite" content="{{courseData?.data?.description ?? ''}}" isHtml="{{courseData?.data?.description_mode === 'html'}}"/></div>
+        </section>
+
+        <section class="admin-card" aria-labelledby="course-lessons-heading">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 id="course-lessons-heading" class="section-heading">$t:glitter-learning.admin.courses.lessons</h2>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.user.courses.curriculum_description</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button data-if="{{(courseData?.data?.lessons ?? []).length > 1}}" type="button" class="btn btn-neutral">
+                <on type="click">
+                  <set-state target="global" reorderItems="{{(courseData?.data?.lessons ?? []).map(item =&gt; ({id: item.id, title: item.title}))}}" reorderOriginal="{{(courseData?.data?.lessons ?? []).map(item =&gt; ({id: item.id, title: item.title}))}}" :reorderSaving="false" :reorderError="null"/>
+                  <open-modal target="glitter_learning_reorder_modal"/>
+                </on>
+                <span>$t:glitter-learning.admin.lessons.reorder</span>
+              </button>
+              <a href="/admin/learning/courses/{{route.course}}/lessons/create" class="btn btn-primary"><span>$t:glitter-learning.admin.lessons.create</span></a>
+            </div>
+          </div>
+
+          <empty-state data-type="composite" data-if="{{courseData !== undefined &amp;&amp; (courseData?.data?.lessons ?? []).length === 0}}" iconName="book-open" title="$t:glitter-learning.admin.lessons.empty_title" description="$t:glitter-learning.admin.lessons.empty_description" class="py-10">
+            <a href="/admin/learning/courses/{{route.course}}/lessons/create" class="btn btn-primary"><span>$t:glitter-learning.admin.lessons.create</span></a>
+          </empty-state>
+
+          <data-grid data-if="{{(courseData?.data?.lessons ?? []).length > 0}}" data-type="composite" data="{{courseData?.data?.lessons ?? []}}" idField="id" rowLabelField="title" :responsiveBreakpoint="768" emptyMessage="" actionsColumnHeader="$t:glitter-learning.common.actions">
+            <column field="sort_order" header="$t:glitter-learning.admin.lessons.sort_order"/>
+            <column field="title" header="$t:glitter-learning.admin.lessons.title"><cell><div class="flex flex-wrap items-center gap-2"><span class="font-medium">{{row.title}}</span><a href="/admin/learning/courses/{{route.course}}/lessons/{{row.id}}/edit" class="btn btn-sm btn-neutral"><span>$t:glitter-learning.common.edit</span></a><button type="button" class="btn btn-sm btn-danger"><on type="click"><set-state target="global" lessonDeleteTarget="{{row}}" :lessonDeleting="false"/><open-modal target="glitter_learning_delete_lesson_modal"/></on><span>$t:glitter-learning.admin.lessons.delete</span></button></div></cell></column>
+            <column field="is_required" header="$t:glitter-learning.admin.lessons.required">
+              <cell><status-badge data-type="composite" status="{{row.is_required ? 'info' : 'default'}}" label="{{row.is_required ? $t('glitter-learning.admin.lessons.required') : $t('glitter-learning.admin.lessons.optional')}}" :showIcon="false"/></cell>
+            </column>
+            <column field="is_published" header="$t:glitter-learning.admin.lessons.published">
+              <cell><status-badge data-type="composite" status="{{row.is_published ? 'success' : 'warning'}}" label="{{row.is_published ? $t('glitter-learning.admin.lessons.published') : $t('glitter-learning.admin.lessons.private')}}" :showIcon="false"/></cell>
+            </column>
+          </data-grid>
+        </section>
+
+        <section class="admin-card" aria-labelledby="course-learners-heading">
+          <div class="mb-4">
+            <h2 id="course-learners-heading" class="section-heading">$t:glitter-learning.admin.courses.learners</h2>
+          </div>
+          <empty-state data-type="composite" data-if="{{enrollments !== undefined &amp;&amp; (enrollments?.data?.data?.data ?? []).length === 0}}" iconName="users" title="$t:glitter-learning.admin.records.empty_title" description="$t:glitter-learning.admin.records.empty_description" class="py-10"/>
+          <data-grid data-if="{{(enrollments?.data?.data?.data ?? []).length > 0}}" data-type="composite" data="{{enrollments?.data?.data?.data ?? []}}" idField="id" :responsiveBreakpoint="768" emptyMessage="">
+            <column field="user.name" header="$t:glitter-learning.admin.records.user"><cell><span class="font-medium">{{row.user?.nickname || row.user?.name || ''}}</span></cell></column>
+            <column field="status" header="$t:glitter-learning.admin.records.status">
+              <cell><status-badge data-type="composite" status="{{row.status === 'completed' ? 'success' : (row.status === 'cancelled' ? 'default' : 'info')}}" label="{{row.status === 'completed' ? $t('glitter-learning.admin.records.completed') : (row.status === 'cancelled' ? $t('glitter-learning.admin.records.cancelled') : $t('glitter-learning.admin.records.active'))}}" :showIcon="false"/></cell>
+            </column>
+            <column field="progress" header="$t:glitter-learning.admin.records.progress">
+              <cell>
+                <div class="min-w-32">
+                  <div class="mb-1 text-sm tabular-nums">{{row.progress_summary?.progress_percent ?? 0}}%</div>
+                  <progress class="h-2 w-full" value="{{row.progress_summary?.progress_percent ?? 0}}" max="100"></progress>
+                </div>
+              </cell>
+            </column>
+            <column field="enrolled_at" header="$t:glitter-learning.admin.records.enrolled_at"><cell><span>{{row.enrolled_at | datetime | default('-')}}</span></cell></column>
+          </data-grid>
+        </section>
+      </div>
+    </div>
+  </slot>
+
+  <modal>
+    <modal data-type="composite" data-ref="glitter_learning_delete_lesson_modal" title="$t:glitter-learning.admin.lessons.delete_title" size="sm">
+      <on type="click" event="onClose">
+        <close-modal target="glitter_learning_delete_lesson_modal"/>
+        <set-state target="global" :lessonDeleteTarget="null" :lessonDeleting="false"/>
+      </on>
+      <div class="row-stack gap-4">
+        <p>$t:glitter-learning.admin.lessons.delete_description</p>
+        <p class="font-semibold">{{_global.lessonDeleteTarget?.title ?? ''}}</p>
+        <div class="modal-footer-buttons">
+          <button type="button" class="btn btn-neutral" disabled="{{_global.lessonDeleting}}">
+            <on type="click"><close-modal target="glitter_learning_delete_lesson_modal"/><set-state target="global" :lessonDeleteTarget="null"/></on>
+            <span>$t:glitter-learning.common.cancel</span>
+          </button>
+          <button type="button" :lockRepeatClick="true" class="btn btn-danger" disabled="{{_global.lessonDeleting}}">
+            <on type="click">
+              <set-state target="global" :lessonDeleting="true"/>
+              <api-call :auth_required="true" target="/api/modules/glitter-learning/admin/courses/{{route.course}}/lessons/{{_global.lessonDeleteTarget?.id}}" method="DELETE">
+                <success>
+                  <set-state target="global" :lessonDeleting="false" :lessonDeleteTarget="null"/>
+                  <close-modal target="glitter_learning_delete_lesson_modal"/>
+                  <toast type="success" message="$t:glitter-learning.admin.lessons.deleted"/>
+                  <refetch-data-source dataSourceId="courseData"/>
+                </success>
+                <fail>
+                  <set-state target="global" :lessonDeleting="false"/>
+                  <toast type="error" message="{{error.message ?? '$t:glitter-learning.common.delete_failed'}}"/>
+                </fail>
+              </api-call>
+            </on>
+            <span>$t:glitter-learning.admin.lessons.delete_confirm</span>
+          </button>
+        </div>
+      </div>
+    </modal>
+  </modal>
+
+  <modal>
+    <modal data-type="composite" data-ref="glitter_learning_reorder_modal" title="$t:glitter-learning.admin.lessons.reorder_title" size="md">
+      <on type="click" event="onClose">
+        <close-modal target="glitter_learning_reorder_modal"/>
+        <set-state target="global" :reorderItems="null" :reorderOriginal="null" :reorderError="null"/>
+      </on>
+      <div class="row-stack gap-4">
+        <p class="text-sm text-gray-600 dark:text-gray-300">$t:glitter-learning.admin.lessons.reorder_description</p>
+        <div class="max-h-[70vh] overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <div class="divide-y divide-gray-200 dark:divide-gray-700">
+            <sortable source="{{(_global.reorderItems ?? []).map((item, index) =&gt; ({...item, _index: index}))}}" item-var="item" item-key="id" index-var="itemIndex" strategy="verticalList" handle="[data-drag-handle]"/>
+            <item-template>
+              <div class="flex items-center gap-3 bg-white px-3 py-2 dark:bg-gray-800">
+                <div :data-drag-handle="true" aria-hidden="true" title="$t:glitter-learning.admin.lessons.drag_handle" class="hidden cursor-grab text-gray-400 md:flex"><icon name="fa-solid fa-grip-vertical" class="text-sm"/></div>
+                <span class="w-6 text-right text-sm tabular-nums text-gray-500">{{item._index + 1}}</span>
+                <span class="min-w-0 flex-1 truncate font-medium">{{item.title}}</span>
+                <button type="button" aria-label="{{$t('glitter-learning.admin.lessons.move_up', { title: item.title })}}" class="flex-center h-10 w-10 rounded text-gray-500 hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-gray-700" disabled="{{_global.reorderSaving || item._index === 0}}">
+                  <on type="click"><set-state target="global" reorderItems="{{(_global.reorderItems ?? []).map((entry, index, all) =&gt; index === item._index - 1 ? all[item._index] : (index === item._index ? all[item._index - 1] : entry))}}" :reorderError="null"/></on>
+                  <icon name="fa-solid fa-chevron-up" class="text-xs"/>
+                </button>
+                <button type="button" aria-label="{{$t('glitter-learning.admin.lessons.move_down', { title: item.title })}}" class="flex-center h-10 w-10 rounded text-gray-500 hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-gray-700" disabled="{{_global.reorderSaving || item._index === (_global.reorderItems ?? []).length - 1}}">
+                  <on type="click"><set-state target="global" reorderItems="{{(_global.reorderItems ?? []).map((entry, index, all) =&gt; index === item._index ? all[item._index + 1] : (index === item._index + 1 ? all[item._index] : entry))}}" :reorderError="null"/></on>
+                  <icon name="fa-solid fa-chevron-down" class="text-xs"/>
+                </button>
+              </div>
+            </item-template>
+            <on event="onSortEnd"><set-state target="global" reorderItems="{{$sortedItems.map(item =&gt; ({id: item.id, title: item.title}))}}" :reorderError="null"/></on>
+          </div>
+        </div>
+        <div data-if="{{!!_global.reorderError}}" role="alert" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">{{_global.reorderError}}</div>
+        <div class="modal-footer-buttons">
+          <button type="button" class="btn btn-neutral" disabled="{{_global.reorderSaving}}">
+            <on type="click"><close-modal target="glitter_learning_reorder_modal"/><set-state target="global" :reorderItems="null" :reorderOriginal="null" :reorderError="null"/></on>
+            <span>$t:glitter-learning.common.cancel</span>
+          </button>
+          <button type="button" :lockRepeatClick="true" class="btn btn-primary" disabled="{{_global.reorderSaving || (_global.reorderItems ?? []).map(item =&gt; item.id).join(',') === (_global.reorderOriginal ?? []).map(item =&gt; item.id).join(',')}}">
+            <on type="click">
+              <set-state target="global" :reorderSaving="true" :reorderError="null"/>
+              <api-call :auth_required="true" target="/api/modules/glitter-learning/admin/courses/{{route.course}}/lessons/reorder" method="PATCH">
+                <body lesson_ids="{{(_global.reorderItems ?? []).map(item =&gt; item.id)}}"/>
+                <success>
+                  <set-state target="global" :reorderSaving="false" :reorderItems="null" :reorderOriginal="null"/>
+                  <close-modal target="glitter_learning_reorder_modal"/>
+                  <toast type="success" message="$t:glitter-learning.admin.lessons.reordered"/>
+                  <refetch-data-source dataSourceId="courseData"/>
+                </success>
+                <fail><set-state target="global" :reorderSaving="false" reorderError="{{error.errors?.lesson_ids?.[0] ?? error.message ?? '$t:glitter-learning.common.save_failed'}}"/></fail>
+              </api-call>
+            </on>
+            <span>{{_global.reorderSaving ? '$t:glitter-learning.admin.lessons.reorder_saving' : '$t:glitter-learning.admin.lessons.reorder_save'}}</span>
+          </button>
+        </div>
+      </div>
+    </modal>
+  </modal>
+</layout>

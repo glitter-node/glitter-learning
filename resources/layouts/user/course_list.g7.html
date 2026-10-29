@@ -1,0 +1,28 @@
+<layout name="course_list" version="1.0.5" extends="_user_base">
+  <meta title="$t:glitter-learning.user.courses.title" description="$t:glitter-learning.user.courses.description"/>
+  <data-source id="courses" type="api" endpoint="/api/modules/glitter-learning/learning/courses" method="GET" :auto_fetch="true" :auth_required="false" loading_strategy="blocking"><params page="{{query.page}}"/></data-source>
+  <slot name="content">
+    <div class="glitter-learning-user-shell" role="main">
+      <div class="glitter-learning-user-page-header">
+        <div><h1>$t:glitter-learning.user.courses.title</h1><p>$t:glitter-learning.user.courses.description</p></div>
+        <a href="/learning/me" class="glitter-learning-user-button"><span>$t:glitter-learning.user.my_learning.title</span></a>
+      </div>
+      <div data-if="{{courses !== undefined &amp;&amp; (courses?.data?.data ?? []).length === 0}}" class="glitter-learning-user-empty"><h2>$t:glitter-learning.user.courses.empty_title</h2><p>$t:glitter-learning.user.courses.empty_description</p></div>
+      <div data-if="{{(courses?.data?.data ?? []).length > 0}}" class="glitter-learning-user-grid">
+        <div data-each="course in {{courses?.data?.data ?? []}}" class="glitter-learning-user-card glitter-learning-user-course-card">
+          <a data-if="{{course.thumbnail_url}}" href="/learning/courses/{{course.slug}}" class="glitter-learning-user-card-media"><img src="{{course.thumbnail_url}}" alt="{{course.title}}" loading="lazy"/></a>
+          <div class="glitter-learning-user-card-body">
+            <h2><a href="/learning/courses/{{course.slug}}">{{course.title}}</a></h2>
+            <p data-if="{{course.introduction}}" class="glitter-learning-user-card-introduction">{{course.introduction}}</p>
+            <div class="glitter-learning-user-card-meta"><span class="glitter-learning-user-badge">$t:glitter-learning.user.courses.lesson_count|count={{course.lessons_count ?? 0}}</span></div>
+            <a href="/learning/courses/{{course.slug}}" class="glitter-learning-user-button"><span>$t:glitter-learning.user.courses.view_details</span></a>
+          </div>
+        </div>
+      </div>
+      <nav data-if="{{(courses?.data?.last_page ?? 1) > 1}}" class="glitter-learning-user-actions" aria-label="$t:glitter-learning.user.courses.title">
+        <a data-if="{{(courses?.data?.current_page ?? 1) > 1}}" href="/learning?page={{(courses?.data?.current_page ?? 1) - 1}}" class="glitter-learning-user-button"><span>$t:glitter-learning.common.previous</span></a>
+        <a data-if="{{(courses?.data?.current_page ?? 1) &lt; (courses?.data?.last_page ?? 1)}}" href="/learning?page={{(courses?.data?.current_page ?? 1) + 1}}" class="glitter-learning-user-button"><span>$t:glitter-learning.common.next</span></a>
+      </nav>
+    </div>
+  </slot>
+</layout>

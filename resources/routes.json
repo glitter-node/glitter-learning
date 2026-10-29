@@ -1,0 +1,16 @@
+{
+    "version": "1.1.0",
+    "routes": [
+        {"path": "*/admin/learning/courses", "layout": "admin_course_list", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.courses.title"}},
+        {"path": "*/admin/learning/courses/create", "layout": "admin_course_form", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.courses.create"}},
+        {"path": "*/admin/learning/courses/:course/edit", "layout": "admin_course_form", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.courses.edit"}},
+        {"path": "*/admin/learning/courses/:course", "layout": "admin_course_detail", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.courses.detail"}},
+        {"path": "*/admin/learning/courses/:course/lessons/create", "layout": "admin_lesson_form", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.lessons.create"}},
+        {"path": "*/admin/learning/courses/:course/lessons/:lesson/edit", "layout": "admin_lesson_form", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.lessons.edit"}},
+        {"path": "*/admin/learning/completions", "layout": "admin_completion_list", "auth_required": true, "meta": {"title": "$t:glitter-learning.admin.completions.title"}},
+        {"path": "*/learning", "layout": "course_list", "auth_required": false, "meta": {"title": "$t:glitter-learning.user.courses.title"}},
+        {"path": "*/learning/courses/:course", "layout": "course_detail", "auth_required": false, "meta": {"title": "$t:glitter-learning.user.courses.detail"}},
+        {"path": "*/learning/courses/:course/lessons/:lesson", "layout": "lesson", "auth_required": true, "meta": {"title": "$t:glitter-learning.user.lessons.title"}},
+        {"path": "*/learning/me", "layout": "my_learning", "auth_required": true, "meta": {"title": "$t:glitter-learning.user.my_learning.title"}}
+    ]
+}

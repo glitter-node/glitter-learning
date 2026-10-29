@@ -1,0 +1,192 @@
+<layout name="admin_course_form" version="1.0.2" extends="_admin_base">
+  <meta title="{{route?.course ? '$t:glitter-learning.admin.courses.edit' : '$t:glitter-learning.admin.courses.create'}}"/>
+  <permissions><permission>glitter-learning.courses.read</permission></permissions>
+  <data-source id="courseData" type="api" endpoint="/api/modules/glitter-learning/admin/courses/{{route.course}}" method="GET" :auto_fetch="true" :auth_required="true" if="{{route.course}}" initLocal="form" loading_strategy="blocking" :refetchOnMount="true"/>
+  <init-local>
+    <field name="form">
+      <field name="title" value=""/>
+      <field name="slug" value=""/>
+      <field name="introduction" value=""/>
+      <field name="description" value=""/>
+      <field name="description_mode" value="html"/>
+      <field name="category" value=""/>
+      <field name="difficulty" value=""/>
+      <field name="thumbnail_attachment_id" :value="null"/>
+      <field name="thumbnail_file" :value="null"/>
+      <field name="learning_objectives" :value="[]"/>
+      <field name="prerequisites" value=""/>
+      <field name="target_audience" value=""/>
+      <field name="estimated_minutes" :value="null"/>
+      <field name="status" value="draft"/>
+      <field name="published_at" :value="null"/>
+    </field>
+    <field name="errors" :value="null"/>
+    <field name="isSaving" :value="false"/>
+    <field name="preview" :value="null"/>
+  </init-local>
+  <slot name="content">
+    <div class="admin-page-content">
+      <page-header data-type="composite" title="{{route?.course ? '$t:glitter-learning.admin.courses.edit' : '$t:glitter-learning.admin.courses.create'}}">
+        <a href="/admin/learning/courses" class="btn btn-neutral"><span>$t:glitter-learning.admin.courses.cancel</span></a>
+      </page-header>
+
+      <div class="admin-card">
+        <div class="row-stack gap-6">
+          <section class="row-stack gap-4" aria-labelledby="course-basic-information">
+            <h2 id="course-basic-information" class="section-heading">$t:glitter-learning.admin.courses.basic_information</h2>
+            <div>
+              <label class="form-label" for="glitter-learning-course-title">
+                <span>$t:glitter-learning.admin.courses.title_field</span>
+                <span class="text-red-600" aria-hidden="true">*</span>
+              </label>
+              <input id="glitter-learning-course-title" class="{{_local.errors?.title ? 'border-red-500' : ''}}" aria-required="true" aria-invalid="{{!!_local.errors?.title}}" value="{{_local.form?.title ?? ''}}">
+                <on type="change"><set-state target="local" form.title="{{$event.target.value}}" errors.title="{{null}}"/></on>
+              </input>
+              <p data-if="{{_local.errors?.title}}" class="mt-1 text-sm text-red-600">{{_local.errors?.title?.[0] ?? _local.errors?.title}}</p>
+            </div>
+
+            <div>
+              <label class="form-label" for="glitter-learning-course-slug">
+                <span>$t:glitter-learning.admin.courses.slug</span>
+                <span class="text-red-600" aria-hidden="true">*</span>
+              </label>
+              <input id="glitter-learning-course-slug" class="{{_local.errors?.slug ? 'border-red-500' : ''}}" aria-required="true" aria-invalid="{{!!_local.errors?.slug}}" placeholder="$t:glitter-learning.admin.courses.slug_example" value="{{_local.form?.slug ?? ''}}">
+                <on type="change"><set-state target="local" form.slug="{{$event.target.value}}" errors.slug="{{null}}"/></on>
+              </input>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.slug_hint</p>
+              <p data-if="{{_local.errors?.slug}}" class="mt-1 text-sm text-red-600">{{_local.errors?.slug?.[0] ?? _local.errors?.slug}}</p>
+            </div>
+
+            <div>
+              <label class="form-label" for="glitter-learning-course-introduction">$t:glitter-learning.admin.courses.introduction</label>
+              <textarea id="glitter-learning-course-introduction" :rows="3" value="{{_local.form?.introduction ?? ''}}"><on type="change"><set-state target="local" form.introduction="{{$event.target.value}}" errors.introduction="{{null}}"/></on></textarea>
+              <p data-if="{{_local.errors?.introduction}}" class="mt-1 text-sm text-red-600">{{_local.errors?.introduction?.[0] ?? _local.errors?.introduction}}</p>
+            </div>
+            <div>
+              <label class="form-label" for="glitter-learning-course-category">$t:glitter-learning.admin.courses.category</label>
+              <select id="glitter-learning-course-category" value="{{_local.form?.category ?? ''}}"><options>
+                <option value="">$t:glitter-learning.admin.courses.not_selected</option>
+                <option value="web-development">$t:glitter-learning.admin.courses.category_web</option>
+                <option value="programming">$t:glitter-learning.admin.courses.category_programming</option>
+                <option value="design">$t:glitter-learning.admin.courses.category_design</option>
+                <option value="general">$t:glitter-learning.admin.courses.category_general</option>
+              </options><on type="change"><set-state target="local" form.category="{{$event.target.value || null}}"/></on></select>
+              <p data-if="{{_local.errors?.category}}" class="mt-1 text-sm text-red-600">{{_local.errors?.category?.[0] ?? _local.errors?.category}}</p>
+            </div>
+            <div>
+              <label class="form-label" for="glitter-learning-course-difficulty">$t:glitter-learning.admin.courses.difficulty</label>
+              <select id="glitter-learning-course-difficulty" value="{{_local.form?.difficulty ?? ''}}"><options>
+                <option value="">$t:glitter-learning.admin.courses.not_selected</option>
+                <option value="introductory">$t:glitter-learning.admin.courses.difficulty_introductory</option>
+                <option value="beginner">$t:glitter-learning.admin.courses.difficulty_beginner</option>
+                <option value="intermediate">$t:glitter-learning.admin.courses.difficulty_intermediate</option>
+                <option value="advanced">$t:glitter-learning.admin.courses.difficulty_advanced</option>
+              </options><on type="change"><set-state target="local" form.difficulty="{{$event.target.value || null}}"/></on></select>
+              <p data-if="{{_local.errors?.difficulty}}" class="mt-1 text-sm text-red-600">{{_local.errors?.difficulty?.[0] ?? _local.errors?.difficulty}}</p>
+            </div>
+            <div>
+              <span class="form-label">$t:glitter-learning.admin.courses.thumbnail</span>
+              <file-uploader data-type="composite" collection="course_thumbnail" :maxFiles="1" :maxSize="10" accept=".jpg,.jpeg,.png,.webp,.gif" initialFiles="{{_local.form?.thumbnail_file ? [_local.form.thumbnail_file] : []}}" :autoUpload="true" :confirmBeforeRemove="false">
+                <prop name="uploadParams"><field name="source_type" value="module"/><field name="source_identifier" value="glitter-learning"/></prop>
+                <prop name="apiEndpoints"><field name="upload" value="/api/admin/attachments"/><field name="delete" value=""/><field name="reorder" value=""/></prop>
+                <on event="onUploadComplete"><set-state target="local" form.thumbnail_attachment_id="{{$args[0]?.[0]?.id ?? null}}" form.thumbnail_file="{{$args[0]?.[0] ?? null}}"/></on>
+                <on event="onRemove"><set-state target="local" form.thumbnail_attachment_id="{{null}}" form.thumbnail_file="{{null}}"/></on>
+              </file-uploader>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.thumbnail_hint</p>
+              <p data-if="{{_local.errors?.thumbnail_attachment_id}}" class="mt-1 text-sm text-red-600">{{_local.errors?.thumbnail_attachment_id?.[0] ?? _local.errors?.thumbnail_attachment_id}}</p>
+            </div>
+          </section>
+
+          <section class="row-stack gap-4 border-t border-gray-200 pt-6 dark:border-gray-700" aria-labelledby="course-design-information">
+            <h2 id="course-design-information" class="section-heading">$t:glitter-learning.admin.courses.design_information</h2>
+            <div><label class="form-label" for="glitter-learning-course-objectives">$t:glitter-learning.admin.courses.learning_objectives</label>
+              <textarea id="glitter-learning-course-objectives" :rows="5" value="{{(_local.form?.learning_objectives ?? []).join('\n')}}"><on type="change"><set-state target="local" form.learning_objectives="{{$event.target.value.split('\n').map(item =&gt; item.trim()).filter(Boolean)}}"/></on></textarea>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.objectives_hint</p>
+              <p data-if="{{_local.errors?.learning_objectives}}" class="mt-1 text-sm text-red-600">{{_local.errors?.learning_objectives?.[0] ?? _local.errors?.learning_objectives}}</p>
+            </div>
+            <div><label class="form-label" for="glitter-learning-course-prerequisites">$t:glitter-learning.admin.courses.prerequisites</label><textarea id="glitter-learning-course-prerequisites" :rows="3" value="{{_local.form?.prerequisites ?? ''}}"><on type="change"><set-state target="local" form.prerequisites="{{$event.target.value}}"/></on></textarea><p data-if="{{_local.errors?.prerequisites}}" class="mt-1 text-sm text-red-600">{{_local.errors?.prerequisites?.[0] ?? _local.errors?.prerequisites}}</p></div>
+            <div><label class="form-label" for="glitter-learning-course-audience">$t:glitter-learning.admin.courses.target_audience</label><textarea id="glitter-learning-course-audience" :rows="3" value="{{_local.form?.target_audience ?? ''}}"><on type="change"><set-state target="local" form.target_audience="{{$event.target.value}}"/></on></textarea><p data-if="{{_local.errors?.target_audience}}" class="mt-1 text-sm text-red-600">{{_local.errors?.target_audience?.[0] ?? _local.errors?.target_audience}}</p></div>
+            <div><label class="form-label" for="glitter-learning-course-minutes">$t:glitter-learning.admin.courses.estimated_minutes</label><input id="glitter-learning-course-minutes" type="number" min="0" step="1" value="{{_local.form?.estimated_minutes ?? ''}}"><on type="change"><set-state target="local" form.estimated_minutes="{{$event.target.value === '' ? null : Number($event.target.value)}}"/></on></input><p data-if="{{_local.errors?.estimated_minutes}}" class="mt-1 text-sm text-red-600">{{_local.errors?.estimated_minutes?.[0] ?? _local.errors?.estimated_minutes}}</p></div>
+          </section>
+
+          <section class="row-stack gap-4 border-t border-gray-200 pt-6 dark:border-gray-700" aria-labelledby="course-content-information">
+            <h2 id="course-content-information" class="section-heading">$t:glitter-learning.admin.courses.content_information</h2>
+            <div>
+              <span class="form-label">$t:glitter-learning.admin.courses.description_field</span>
+              <label class="flex items-center gap-2 mb-3">
+                <input type="checkbox" class="checkbox" checked="{{_local.form?.description_mode === 'html'}}" aria-label="$t:glitter-learning.admin.courses.use_rich_editor">
+                  <on type="change"><set-state target="local" form.description_mode="{{$event.target.checked ? 'html' : 'text'}}" :preview="null"/></on>
+                </input>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$t:glitter-learning.admin.courses.use_rich_editor</span>
+              </label>
+              <extension-point name="html_editor" data-if="{{_local.form?.description_mode === 'html'}}" data-ref="description_editor" content="{{_local.form?.description ?? ''}}" :isHtml="true" :rows="10" :showHtmlModeToggle="false">
+                <prop name="name">"description"</prop>
+                <default>
+                  <html-editor data-type="composite" name="description" content="{{_local.form?.description ?? ''}}" :isHtml="true" :rows="10" :showHtmlModeToggle="false">
+                    <on type="change"><set-state target="local" form.description="{{$event.target.value}}" :preview="null"/></on>
+                  </html-editor>
+                </default>
+              </extension-point>
+              <html-editor data-if="{{_local.form?.description_mode !== 'html'}}" data-type="composite" name="description" content="{{_local.form?.description ?? ''}}" :isHtml="false" :rows="10" :showHtmlModeToggle="false">
+                <on type="change"><set-state target="local" form.description="{{$event.target.value}}" :preview="null"/></on>
+              </html-editor>
+              <p data-if="{{_local.errors?.description}}" class="mt-1 text-sm text-red-600">{{_local.errors?.description?.[0] ?? _local.errors?.description}}</p>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.description_policy_hint</p>
+            </div>
+            <button type="button" class="btn btn-neutral"><on type="click"><api-call :auth_required="true" target="/api/modules/glitter-learning/admin/courses/preview" method="POST" body="{{_local.form}}"><success><set-state target="local" preview="{{response.data?.data ?? response.data}}"/></success><fail><toast type="error" message="$t:glitter-learning.common.request_failed"/></fail></api-call></on><span>$t:glitter-learning.admin.courses.preview</span></button>
+            <div data-if="{{_local.preview !== null}}" class="rounded border border-gray-200 p-4 dark:border-gray-700"><html-content data-type="composite" content="{{_local.preview?.description ?? ''}}" isHtml="{{_local.preview?.description_mode === 'html'}}"/></div>
+            <a data-if="{{route?.course}}" href="/admin/learning/courses/{{route.course}}" class="btn btn-neutral"><span>$t:glitter-learning.admin.courses.manage_lessons</span></a>
+            <p data-if="{{!route?.course}}" class="text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.add_lessons_after_save</p>
+          </section>
+
+          <section class="row-stack gap-4 border-t border-gray-200 pt-6 dark:border-gray-700" aria-labelledby="course-publication-information">
+            <h2 id="course-publication-information" class="section-heading">$t:glitter-learning.admin.courses.publication_information</h2>
+
+            <div>
+              <label class="form-label" for="glitter-learning-course-status">$t:glitter-learning.admin.courses.status</label>
+              <select id="glitter-learning-course-status" value="{{_local.form?.status ?? 'draft'}}">
+                <options>
+                  <option value="draft">$t:glitter-learning.admin.courses.draft</option>
+                  <option value="published">$t:glitter-learning.admin.courses.published</option>
+                  <option value="archived">$t:glitter-learning.admin.courses.archived</option>
+                </options>
+                <on type="change"><set-state target="local" form.status="{{$event.target.value}}" errors.status="{{null}}"/></on>
+              </select>
+              <p data-if="{{_local.errors?.status}}" class="mt-1 text-sm text-red-600">{{_local.errors?.status?.[0] ?? _local.errors?.status}}</p>
+            </div>
+
+            <div>
+              <label class="form-label" for="glitter-learning-course-published-at">$t:glitter-learning.admin.courses.published_at</label>
+              <input id="glitter-learning-course-published-at" type="datetime-local" value="{{_local.form?.published_at ?? ''}}">
+                <on type="change"><set-state target="local" form.published_at="{{$event.target.value || null}}" errors.published_at="{{null}}"/></on>
+              </input>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$t:glitter-learning.admin.courses.published_at_hint</p>
+              <p data-if="{{_local.errors?.published_at}}" class="mt-1 text-sm text-red-600">{{_local.errors?.published_at?.[0] ?? _local.errors?.published_at}}</p>
+            </div>
+          </section>
+
+          <div class="flex flex-wrap justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+            <a href="/admin/learning/courses" class="btn btn-neutral"><span>$t:glitter-learning.common.cancel</span></a>
+            <button type="button" :lockRepeatClick="true" class="btn btn-primary" disabled="{{_local.isSaving}}">
+              <on type="click">
+                <set-state target="local" :isSaving="true" :errors="null"/>
+                <api-call :auth_required="true" target="{{route?.course ? '/api/modules/glitter-learning/admin/courses/' + route.course : '/api/modules/glitter-learning/admin/courses'}}" method="{{route?.course ? 'PUT' : 'POST'}}" body="{{_local.form}}">
+                  <success>
+                    <set-state target="local" :isSaving="false"/>
+                    <toast type="success" message="$t:glitter-learning.admin.courses.saved"/>
+                    <navigate path="/admin/learning/courses/{{route?.course ?? response.data.slug}}"/>
+                  </success>
+                  <fail>
+                    <set-state target="local" :isSaving="false" errors="{{error.errors ?? null}}"/>
+                    <toast type="error" message="{{error.message ?? '$t:glitter-learning.common.save_failed'}}"/>
+                  </fail>
+                </api-call>
+              </on>
+              <span>{{_local.isSaving ? '$t:glitter-learning.admin.courses.saving' : '$t:glitter-learning.admin.courses.save'}}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </slot>
+</layout>

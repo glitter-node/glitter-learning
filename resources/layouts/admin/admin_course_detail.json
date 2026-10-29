@@ -1,0 +1,1110 @@
+{
+    "version": "1.0.1",
+    "layout_name": "admin_course_detail",
+    "extends": "_admin_base",
+    "meta": {
+        "title": "$t:glitter-learning.admin.courses.detail"
+    },
+    "data_sources": [
+        {
+            "id": "courseData",
+            "type": "api",
+            "endpoint": "/api/modules/glitter-learning/admin/courses/{{route.course}}",
+            "method": "GET",
+            "auto_fetch": true,
+            "auth_required": true
+        },
+        {
+            "id": "enrollments",
+            "type": "api",
+            "endpoint": "/api/modules/glitter-learning/admin/courses/{{route.course}}/enrollments",
+            "method": "GET",
+            "auto_fetch": true,
+            "auth_required": true
+        }
+    ],
+    "permissions": [
+        "glitter-learning.courses.read"
+    ],
+    "slots": {
+        "content": [
+            {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                    "className": "admin-page-content-fluid"
+                },
+                "children": [
+                    {
+                        "type": "composite",
+                        "name": "PageHeader",
+                        "props": {
+                            "title": "{{courseData?.data?.title ?? '$t:glitter-learning.admin.courses.detail'}}",
+                            "description": "{{courseData?.data?.introduction ?? ''}}"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/admin/learning/courses",
+                                    "className": "btn btn-neutral"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.admin.courses.back_to_list"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/admin/learning/courses/{{route.course}}/edit",
+                                    "className": "btn btn-neutral"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.common.edit"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/admin/learning/courses/{{route.course}}/lessons/create",
+                                    "className": "btn btn-primary"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.admin.lessons.create"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "grid gap-6"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "Section",
+                                "props": {
+                                    "className": "admin-card",
+                                    "aria-labelledby": "course-summary-heading"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "flex flex-wrap items-center justify-between gap-3"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "course-summary-heading",
+                                                    "className": "section-heading"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.basic_information"
+                                            },
+                                            {
+                                                "type": "composite",
+                                                "name": "StatusBadge",
+                                                "props": {
+                                                    "status": "{{courseData?.data?.status === 'published' ? 'success' : (courseData?.data?.status === 'archived' ? 'default' : 'warning')}}",
+                                                    "label": "{{courseData?.data?.status === 'published' ? $t('glitter-learning.admin.courses.published') : (courseData?.data?.status === 'archived' ? $t('glitter-learning.admin.courses.archived') : $t('glitter-learning.admin.courses.draft'))}}",
+                                                    "showIcon": false
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "mt-4 grid gap-4 md:grid-cols-2"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "props": {
+                                                            "className": "text-sm font-medium text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.slug"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Div",
+                                                        "props": {
+                                                            "className": "mt-1"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Code",
+                                                                "text": "{{courseData?.data?.slug ?? ''}}"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "props": {
+                                                            "className": "text-sm font-medium text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.published_at"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Div",
+                                                        "props": {
+                                                            "className": "mt-1"
+                                                        },
+                                                        "text": "{{courseData?.data?.published_at | datetime | default('-')}}"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "if": "{{courseData?.data?.description}}",
+                                        "props": {
+                                            "className": "mt-5 text-gray-700 dark:text-gray-300"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "composite",
+                                                "name": "HtmlContent",
+                                                "props": {
+                                                    "content": "{{courseData?.data?.description ?? ''}}",
+                                                    "isHtml": "{{courseData?.data?.description_mode === 'html'}}"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "Section",
+                                "props": {
+                                    "className": "admin-card",
+                                    "aria-labelledby": "course-lessons-heading"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "mb-4 flex flex-wrap items-center justify-between gap-3"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "H2",
+                                                        "props": {
+                                                            "id": "course-lessons-heading",
+                                                            "className": "section-heading"
+                                                        },
+                                                        "text": "$t:glitter-learning.admin.courses.lessons"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        },
+                                                        "text": "$t:glitter-learning.user.courses.curriculum_description"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "flex flex-wrap gap-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Button",
+                                                        "if": "{{(courseData?.data?.lessons ?? []).length > 1}}",
+                                                        "actions": [
+                                                            {
+                                                                "type": "click",
+                                                                "handler": "sequence",
+                                                                "actions": [
+                                                                    {
+                                                                        "handler": "setState",
+                                                                        "params": {
+                                                                            "target": "global",
+                                                                            "reorderItems": "{{(courseData?.data?.lessons ?? []).map(item => ({id: item.id, title: item.title}))}}",
+                                                                            "reorderOriginal": "{{(courseData?.data?.lessons ?? []).map(item => ({id: item.id, title: item.title}))}}",
+                                                                            "reorderSaving": false,
+                                                                            "reorderError": null
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "handler": "openModal",
+                                                                        "target": "glitter_learning_reorder_modal"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "props": {
+                                                            "type": "button",
+                                                            "className": "btn btn-neutral"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "text": "$t:glitter-learning.admin.lessons.reorder"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "A",
+                                                        "props": {
+                                                            "href": "/admin/learning/courses/{{route.course}}/lessons/create",
+                                                            "className": "btn btn-primary"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "type": "basic",
+                                                                "name": "Span",
+                                                                "text": "$t:glitter-learning.admin.lessons.create"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "composite",
+                                        "name": "EmptyState",
+                                        "if": "{{courseData !== undefined && (courseData?.data?.lessons ?? []).length === 0}}",
+                                        "props": {
+                                            "iconName": "book-open",
+                                            "title": "$t:glitter-learning.admin.lessons.empty_title",
+                                            "description": "$t:glitter-learning.admin.lessons.empty_description",
+                                            "className": "py-10"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "A",
+                                                "props": {
+                                                    "href": "/admin/learning/courses/{{route.course}}/lessons/create",
+                                                    "className": "btn btn-primary"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Span",
+                                                        "text": "$t:glitter-learning.admin.lessons.create"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "composite",
+                                        "name": "DataGrid",
+                                        "if": "{{(courseData?.data?.lessons ?? []).length > 0}}",
+                                        "props": {
+                                            "data": "{{courseData?.data?.lessons ?? []}}",
+                                            "idField": "id",
+                                            "rowLabelField": "title",
+                                            "responsiveBreakpoint": 768,
+                                            "emptyMessage": "",
+                                            "actionsColumnHeader": "$t:glitter-learning.common.actions",
+                                            "columns": [
+                                                {
+                                                    "field": "sort_order",
+                                                    "header": "$t:glitter-learning.admin.lessons.sort_order"
+                                                },
+                                                {
+                                                    "field": "title",
+                                                    "header": "$t:glitter-learning.admin.lessons.title",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "Div",
+                                                            "props": {
+                                                                "className": "flex flex-wrap items-center gap-2"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "Span",
+                                                                    "props": {
+                                                                        "className": "font-medium"
+                                                                    },
+                                                                    "text": "{{row.title}}"
+                                                                },
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "A",
+                                                                    "props": {
+                                                                        "href": "/admin/learning/courses/{{route.course}}/lessons/{{row.id}}/edit",
+                                                                        "className": "btn btn-sm btn-neutral"
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "basic",
+                                                                            "name": "Span",
+                                                                            "text": "$t:glitter-learning.common.edit"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "Button",
+                                                                    "actions": [
+                                                                        {
+                                                                            "type": "click",
+                                                                            "handler": "sequence",
+                                                                            "actions": [
+                                                                                {
+                                                                                    "handler": "setState",
+                                                                                    "params": {
+                                                                                        "target": "global",
+                                                                                        "lessonDeleteTarget": "{{row}}",
+                                                                                        "lessonDeleting": false
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "handler": "openModal",
+                                                                                    "target": "glitter_learning_delete_lesson_modal"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ],
+                                                                    "props": {
+                                                                        "type": "button",
+                                                                        "className": "btn btn-sm btn-danger"
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "basic",
+                                                                            "name": "Span",
+                                                                            "text": "$t:glitter-learning.admin.lessons.delete"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "field": "is_required",
+                                                    "header": "$t:glitter-learning.admin.lessons.required",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "composite",
+                                                            "name": "StatusBadge",
+                                                            "props": {
+                                                                "status": "{{row.is_required ? 'info' : 'default'}}",
+                                                                "label": "{{row.is_required ? $t('glitter-learning.admin.lessons.required') : $t('glitter-learning.admin.lessons.optional')}}",
+                                                                "showIcon": false
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "field": "is_published",
+                                                    "header": "$t:glitter-learning.admin.lessons.published",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "composite",
+                                                            "name": "StatusBadge",
+                                                            "props": {
+                                                                "status": "{{row.is_published ? 'success' : 'warning'}}",
+                                                                "label": "{{row.is_published ? $t('glitter-learning.admin.lessons.published') : $t('glitter-learning.admin.lessons.private')}}",
+                                                                "showIcon": false
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "Section",
+                                "props": {
+                                    "className": "admin-card",
+                                    "aria-labelledby": "course-learners-heading"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "mb-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "course-learners-heading",
+                                                    "className": "section-heading"
+                                                },
+                                                "text": "$t:glitter-learning.admin.courses.learners"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "composite",
+                                        "name": "EmptyState",
+                                        "if": "{{enrollments !== undefined && (enrollments?.data?.data?.data ?? []).length === 0}}",
+                                        "props": {
+                                            "iconName": "users",
+                                            "title": "$t:glitter-learning.admin.records.empty_title",
+                                            "description": "$t:glitter-learning.admin.records.empty_description",
+                                            "className": "py-10"
+                                        }
+                                    },
+                                    {
+                                        "type": "composite",
+                                        "name": "DataGrid",
+                                        "if": "{{(enrollments?.data?.data?.data ?? []).length > 0}}",
+                                        "props": {
+                                            "data": "{{enrollments?.data?.data?.data ?? []}}",
+                                            "idField": "id",
+                                            "responsiveBreakpoint": 768,
+                                            "emptyMessage": "",
+                                            "columns": [
+                                                {
+                                                    "field": "user.name",
+                                                    "header": "$t:glitter-learning.admin.records.user",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "Span",
+                                                            "props": {
+                                                                "className": "font-medium"
+                                                            },
+                                                            "text": "{{row.user?.nickname || row.user?.name || ''}}"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "field": "status",
+                                                    "header": "$t:glitter-learning.admin.records.status",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "composite",
+                                                            "name": "StatusBadge",
+                                                            "props": {
+                                                                "status": "{{row.status === 'completed' ? 'success' : (row.status === 'cancelled' ? 'default' : 'info')}}",
+                                                                "label": "{{row.status === 'completed' ? $t('glitter-learning.admin.records.completed') : (row.status === 'cancelled' ? $t('glitter-learning.admin.records.cancelled') : $t('glitter-learning.admin.records.active'))}}",
+                                                                "showIcon": false
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "field": "progress",
+                                                    "header": "$t:glitter-learning.admin.records.progress",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "Div",
+                                                            "props": {
+                                                                "className": "min-w-32"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "Div",
+                                                                    "props": {
+                                                                        "className": "mb-1 text-sm tabular-nums"
+                                                                    },
+                                                                    "text": "{{row.progress_summary?.progress_percent ?? 0}}%"
+                                                                },
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "Progress",
+                                                                    "props": {
+                                                                        "className": "h-2 w-full",
+                                                                        "value": "{{row.progress_summary?.progress_percent ?? 0}}",
+                                                                        "max": "100"
+                                                                    },
+                                                                    "text": ""
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "field": "enrolled_at",
+                                                    "header": "$t:glitter-learning.admin.records.enrolled_at",
+                                                    "cellChildren": [
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "Span",
+                                                            "text": "{{row.enrolled_at | datetime | default('-')}}"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "modals": [
+        {
+            "id": "glitter_learning_delete_lesson_modal",
+            "type": "composite",
+            "name": "Modal",
+            "actions": [
+                {
+                    "type": "click",
+                    "event": "onClose",
+                    "handler": "sequence",
+                    "actions": [
+                        {
+                            "handler": "closeModal",
+                            "target": "glitter_learning_delete_lesson_modal"
+                        },
+                        {
+                            "handler": "setState",
+                            "params": {
+                                "target": "global",
+                                "lessonDeleteTarget": null,
+                                "lessonDeleting": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "props": {
+                "title": "$t:glitter-learning.admin.lessons.delete_title",
+                "size": "sm"
+            },
+            "children": [
+                {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": {
+                        "className": "row-stack gap-4"
+                    },
+                    "children": [
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "text": "$t:glitter-learning.admin.lessons.delete_description"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "props": {
+                                "className": "font-semibold"
+                            },
+                            "text": "{{_global.lessonDeleteTarget?.title ?? ''}}"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "Div",
+                            "props": {
+                                "className": "modal-footer-buttons"
+                            },
+                            "children": [
+                                {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "actions": [
+                                        {
+                                            "type": "click",
+                                            "handler": "sequence",
+                                            "actions": [
+                                                {
+                                                    "handler": "closeModal",
+                                                    "target": "glitter_learning_delete_lesson_modal"
+                                                },
+                                                {
+                                                    "handler": "setState",
+                                                    "params": {
+                                                        "target": "global",
+                                                        "lessonDeleteTarget": null
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "props": {
+                                        "type": "button",
+                                        "className": "btn btn-neutral",
+                                        "disabled": "{{_global.lessonDeleting}}"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "basic",
+                                            "name": "Span",
+                                            "text": "$t:glitter-learning.common.cancel"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "actions": [
+                                        {
+                                            "type": "click",
+                                            "handler": "sequence",
+                                            "actions": [
+                                                {
+                                                    "handler": "setState",
+                                                    "params": {
+                                                        "target": "global",
+                                                        "lessonDeleting": true
+                                                    }
+                                                },
+                                                {
+                                                    "handler": "apiCall",
+                                                    "target": "/api/modules/glitter-learning/admin/courses/{{route.course}}/lessons/{{_global.lessonDeleteTarget?.id}}",
+                                                    "auth_required": true,
+                                                    "params": {
+                                                        "method": "DELETE"
+                                                    },
+                                                    "onSuccess": [
+                                                        {
+                                                            "handler": "setState",
+                                                            "params": {
+                                                                "target": "global",
+                                                                "lessonDeleting": false,
+                                                                "lessonDeleteTarget": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "closeModal",
+                                                            "target": "glitter_learning_delete_lesson_modal"
+                                                        },
+                                                        {
+                                                            "handler": "toast",
+                                                            "params": {
+                                                                "type": "success",
+                                                                "message": "$t:glitter-learning.admin.lessons.deleted"
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "refetchDataSource",
+                                                            "params": {
+                                                                "dataSourceId": "courseData"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "onError": [
+                                                        {
+                                                            "handler": "setState",
+                                                            "params": {
+                                                                "target": "global",
+                                                                "lessonDeleting": false
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "toast",
+                                                            "params": {
+                                                                "type": "error",
+                                                                "message": "{{error.message ?? '$t:glitter-learning.common.delete_failed'}}"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "props": {
+                                        "type": "button",
+                                        "lockRepeatClick": true,
+                                        "className": "btn btn-danger",
+                                        "disabled": "{{_global.lessonDeleting}}"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "basic",
+                                            "name": "Span",
+                                            "text": "$t:glitter-learning.admin.lessons.delete_confirm"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "glitter_learning_reorder_modal",
+            "type": "composite",
+            "name": "Modal",
+            "actions": [
+                {
+                    "type": "click",
+                    "event": "onClose",
+                    "handler": "sequence",
+                    "actions": [
+                        {
+                            "handler": "closeModal",
+                            "target": "glitter_learning_reorder_modal"
+                        },
+                        {
+                            "handler": "setState",
+                            "params": {
+                                "target": "global",
+                                "reorderItems": null,
+                                "reorderOriginal": null,
+                                "reorderError": null
+                            }
+                        }
+                    ]
+                }
+            ],
+            "props": {
+                "title": "$t:glitter-learning.admin.lessons.reorder_title",
+                "size": "md"
+            },
+            "children": [
+                {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": {
+                        "className": "row-stack gap-4"
+                    },
+                    "children": [
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "props": {
+                                "className": "text-sm text-gray-600 dark:text-gray-300"
+                            },
+                            "text": "$t:glitter-learning.admin.lessons.reorder_description"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "Div",
+                            "props": {
+                                "className": "max-h-[70vh] overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700"
+                            },
+                            "children": [
+                                {
+                                    "type": "basic",
+                                    "name": "Div",
+                                    "sortable": {
+                                        "source": "{{(_global.reorderItems ?? []).map((item, index) => ({...item, _index: index}))}}",
+                                        "itemVar": "item",
+                                        "itemKey": "id",
+                                        "indexVar": "itemIndex",
+                                        "strategy": "verticalList",
+                                        "handle": "[data-drag-handle]"
+                                    },
+                                    "itemTemplate": {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "flex items-center gap-3 bg-white px-3 py-2 dark:bg-gray-800"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "data-drag-handle": true,
+                                                    "aria-hidden": "true",
+                                                    "title": "$t:glitter-learning.admin.lessons.drag_handle",
+                                                    "className": "hidden cursor-grab text-gray-400 md:flex"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Icon",
+                                                        "props": {
+                                                            "name": "fa-solid fa-grip-vertical",
+                                                            "className": "text-sm"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Span",
+                                                "props": {
+                                                    "className": "w-6 text-right text-sm tabular-nums text-gray-500"
+                                                },
+                                                "text": "{{item._index + 1}}"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Span",
+                                                "props": {
+                                                    "className": "min-w-0 flex-1 truncate font-medium"
+                                                },
+                                                "text": "{{item.title}}"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Button",
+                                                "actions": [
+                                                    {
+                                                        "type": "click",
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "global",
+                                                            "reorderItems": "{{(_global.reorderItems ?? []).map((entry, index, all) => index === item._index - 1 ? all[item._index] : (index === item._index ? all[item._index - 1] : entry))}}",
+                                                            "reorderError": null
+                                                        }
+                                                    }
+                                                ],
+                                                "props": {
+                                                    "type": "button",
+                                                    "aria-label": "{{$t('glitter-learning.admin.lessons.move_up', { title: item.title })}}",
+                                                    "className": "flex-center h-10 w-10 rounded text-gray-500 hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-gray-700",
+                                                    "disabled": "{{_global.reorderSaving || item._index === 0}}"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Icon",
+                                                        "props": {
+                                                            "name": "fa-solid fa-chevron-up",
+                                                            "className": "text-xs"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Button",
+                                                "actions": [
+                                                    {
+                                                        "type": "click",
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "global",
+                                                            "reorderItems": "{{(_global.reorderItems ?? []).map((entry, index, all) => index === item._index ? all[item._index + 1] : (index === item._index + 1 ? all[item._index] : entry))}}",
+                                                            "reorderError": null
+                                                        }
+                                                    }
+                                                ],
+                                                "props": {
+                                                    "type": "button",
+                                                    "aria-label": "{{$t('glitter-learning.admin.lessons.move_down', { title: item.title })}}",
+                                                    "className": "flex-center h-10 w-10 rounded text-gray-500 hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-gray-700",
+                                                    "disabled": "{{_global.reorderSaving || item._index === (_global.reorderItems ?? []).length - 1}}"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Icon",
+                                                        "props": {
+                                                            "name": "fa-solid fa-chevron-down",
+                                                            "className": "text-xs"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "actions": [
+                                        {
+                                            "event": "onSortEnd",
+                                            "handler": "setState",
+                                            "params": {
+                                                "target": "global",
+                                                "reorderItems": "{{$sortedItems.map(item => ({id: item.id, title: item.title}))}}",
+                                                "reorderError": null
+                                            }
+                                        }
+                                    ],
+                                    "props": {
+                                        "className": "divide-y divide-gray-200 dark:divide-gray-700"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "basic",
+                            "name": "Div",
+                            "if": "{{!!_global.reorderError}}",
+                            "props": {
+                                "role": "alert",
+                                "className": "rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"
+                            },
+                            "text": "{{_global.reorderError}}"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "Div",
+                            "props": {
+                                "className": "modal-footer-buttons"
+                            },
+                            "children": [
+                                {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "actions": [
+                                        {
+                                            "type": "click",
+                                            "handler": "sequence",
+                                            "actions": [
+                                                {
+                                                    "handler": "closeModal",
+                                                    "target": "glitter_learning_reorder_modal"
+                                                },
+                                                {
+                                                    "handler": "setState",
+                                                    "params": {
+                                                        "target": "global",
+                                                        "reorderItems": null,
+                                                        "reorderOriginal": null,
+                                                        "reorderError": null
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "props": {
+                                        "type": "button",
+                                        "className": "btn btn-neutral",
+                                        "disabled": "{{_global.reorderSaving}}"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "basic",
+                                            "name": "Span",
+                                            "text": "$t:glitter-learning.common.cancel"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "actions": [
+                                        {
+                                            "type": "click",
+                                            "handler": "sequence",
+                                            "actions": [
+                                                {
+                                                    "handler": "setState",
+                                                    "params": {
+                                                        "target": "global",
+                                                        "reorderSaving": true,
+                                                        "reorderError": null
+                                                    }
+                                                },
+                                                {
+                                                    "handler": "apiCall",
+                                                    "target": "/api/modules/glitter-learning/admin/courses/{{route.course}}/lessons/reorder",
+                                                    "auth_required": true,
+                                                    "params": {
+                                                        "method": "PATCH",
+                                                        "body": {
+                                                            "lesson_ids": "{{(_global.reorderItems ?? []).map(item => item.id)}}"
+                                                        }
+                                                    },
+                                                    "onSuccess": [
+                                                        {
+                                                            "handler": "setState",
+                                                            "params": {
+                                                                "target": "global",
+                                                                "reorderSaving": false,
+                                                                "reorderItems": null,
+                                                                "reorderOriginal": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "closeModal",
+                                                            "target": "glitter_learning_reorder_modal"
+                                                        },
+                                                        {
+                                                            "handler": "toast",
+                                                            "params": {
+                                                                "type": "success",
+                                                                "message": "$t:glitter-learning.admin.lessons.reordered"
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "refetchDataSource",
+                                                            "params": {
+                                                                "dataSourceId": "courseData"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "onError": {
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "global",
+                                                            "reorderSaving": false,
+                                                            "reorderError": "{{error.errors?.lesson_ids?.[0] ?? error.message ?? '$t:glitter-learning.common.save_failed'}}"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "props": {
+                                        "type": "button",
+                                        "lockRepeatClick": true,
+                                        "className": "btn btn-primary",
+                                        "disabled": "{{_global.reorderSaving || (_global.reorderItems ?? []).map(item => item.id).join(',') === (_global.reorderOriginal ?? []).map(item => item.id).join(',')}}"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "basic",
+                                            "name": "Span",
+                                            "text": "{{_global.reorderSaving ? '$t:glitter-learning.admin.lessons.reorder_saving' : '$t:glitter-learning.admin.lessons.reorder_save'}}"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

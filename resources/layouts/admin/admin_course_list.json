@@ -1,0 +1,478 @@
+{
+    "version": "1.0.1",
+    "layout_name": "admin_course_list",
+    "extends": "_admin_base",
+    "meta": {
+        "title": "$t:glitter-learning.admin.courses.title",
+        "description": "$t:glitter-learning.admin.courses.description"
+    },
+    "data_sources": [
+        {
+            "id": "courses",
+            "type": "api",
+            "endpoint": "/api/modules/glitter-learning/admin/courses",
+            "method": "GET",
+            "auto_fetch": true,
+            "auth_required": true,
+            "params": {
+                "page": "{{query.page}}",
+                "status": "{{query.status}}",
+                "search": "{{query.search}}"
+            }
+        }
+    ],
+    "initLocal": {
+        "deleteCourseTarget": null,
+        "isDeletingCourse": false
+    },
+    "permissions": [
+        "glitter-learning.courses.read"
+    ],
+    "slots": {
+        "content": [
+            {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                    "className": "admin-page-content-fluid"
+                },
+                "children": [
+                    {
+                        "type": "composite",
+                        "name": "PageHeader",
+                        "props": {
+                            "title": "$t:glitter-learning.admin.courses.title",
+                            "description": "$t:glitter-learning.admin.courses.description"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/admin/learning/completions",
+                                    "className": "btn btn-neutral"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.admin.completions.title"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/admin/learning/courses/create",
+                                    "className": "btn btn-primary"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.admin.courses.create"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "admin-card"
+                        },
+                        "children": [
+                            {
+                                "type": "composite",
+                                "name": "EmptyState",
+                                "if": "{{courses !== undefined && (courses?.data?.data ?? []).length === 0}}",
+                                "props": {
+                                    "iconName": "graduation-cap",
+                                    "title": "$t:glitter-learning.admin.courses.empty_title",
+                                    "description": "$t:glitter-learning.admin.courses.empty_description",
+                                    "className": "py-12"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "A",
+                                        "props": {
+                                            "href": "/admin/learning/courses/create",
+                                            "className": "btn btn-primary"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Span",
+                                                "text": "$t:glitter-learning.admin.courses.create"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "composite",
+                                "name": "DataGrid",
+                                "if": "{{(courses?.data?.data ?? []).length > 0}}",
+                                "blur_until_loaded": true,
+                                "props": {
+                                    "data": "{{courses?.data?.data ?? []}}",
+                                    "idField": "id",
+                                    "rowLabelField": "title",
+                                    "emptyMessage": "",
+                                    "responsiveBreakpoint": 768,
+                                    "pagination": true,
+                                    "serverSidePagination": true,
+                                    "serverCurrentPage": "{{courses?.data?.current_page ?? 1}}",
+                                    "serverTotalPages": "{{courses?.data?.last_page ?? 1}}",
+                                    "pageHref": "/admin/learning/courses?page={page}",
+                                    "pageHrefMergeQuery": true,
+                                    "actionsColumnHeader": "$t:glitter-learning.common.actions",
+                                    "columns": [
+                                        {
+                                            "field": "title",
+                                            "header": "$t:glitter-learning.admin.courses.title_field",
+                                            "cellChildren": [
+                                                {
+                                                    "type": "basic",
+                                                    "name": "Div",
+                                                    "props": {
+                                                        "className": "flex flex-wrap items-center gap-2"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "A",
+                                                            "props": {
+                                                                "href": "/admin/learning/courses/{{row.slug}}",
+                                                                "className": "font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                            },
+                                                            "text": "{{row.title}}"
+                                                        },
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "A",
+                                                            "props": {
+                                                                "href": "/admin/learning/courses/{{row.slug}}/edit",
+                                                                "className": "btn btn-sm btn-neutral"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "Span",
+                                                                    "text": "$t:glitter-learning.common.edit"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "basic",
+                                                            "name": "Button",
+                                                            "actions": [
+                                                                {
+                                                                    "type": "click",
+                                                                    "handler": "sequence",
+                                                                    "actions": [
+                                                                        {
+                                                                            "handler": "setState",
+                                                                            "params": {
+                                                                                "target": "local",
+                                                                                "deleteCourseTarget": "{{row}}",
+                                                                                "isDeletingCourse": false
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "handler": "openModal",
+                                                                            "target": "glitter_learning_delete_course_modal"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ],
+                                                            "props": {
+                                                                "type": "button",
+                                                                "className": "btn btn-sm btn-danger",
+                                                                "disabled": "{{_local.isDeletingCourse}}"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "basic",
+                                                                    "name": "Span",
+                                                                    "text": "$t:glitter-learning.admin.courses.delete"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "field": "slug",
+                                            "header": "$t:glitter-learning.admin.courses.slug",
+                                            "cellChildren": [
+                                                {
+                                                    "type": "basic",
+                                                    "name": "Code",
+                                                    "props": {
+                                                        "className": "text-xs"
+                                                    },
+                                                    "text": "{{row.slug}}"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "field": "status",
+                                            "header": "$t:glitter-learning.admin.courses.status",
+                                            "cellChildren": [
+                                                {
+                                                    "type": "composite",
+                                                    "name": "StatusBadge",
+                                                    "props": {
+                                                        "status": "{{row.status === 'published' ? 'success' : (row.status === 'archived' ? 'default' : 'warning')}}",
+                                                        "label": "{{row.status === 'published' ? $t('glitter-learning.admin.courses.published') : (row.status === 'archived' ? $t('glitter-learning.admin.courses.archived') : $t('glitter-learning.admin.courses.draft'))}}",
+                                                        "showIcon": false
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "field": "lessons_count",
+                                            "header": "$t:glitter-learning.admin.courses.lessons",
+                                            "cellChildren": [
+                                                {
+                                                    "type": "basic",
+                                                    "name": "Span",
+                                                    "text": "{{row.lessons_count ?? 0}}"
+                                                },
+                                                {
+                                                    "type": "basic",
+                                                    "name": "Span",
+                                                    "props": {
+                                                        "className": "ml-1"
+                                                    },
+                                                    "text": "$t:glitter-learning.admin.courses.lessons"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "field": "enrollments_count",
+                                            "header": "$t:glitter-learning.admin.courses.learners",
+                                            "cellChildren": [
+                                                {
+                                                    "type": "basic",
+                                                    "name": "Span",
+                                                    "text": "$t:glitter-learning.admin.courses.learner_count|count={{row.enrollments_count ?? 0}}"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "modals": [
+        {
+            "id": "glitter_learning_delete_course_modal",
+            "type": "composite",
+            "name": "Modal",
+            "actions": [
+                {
+                    "type": "click",
+                    "event": "onClose",
+                    "handler": "sequence",
+                    "actions": [
+                        {
+                            "handler": "closeModal",
+                            "target": "glitter_learning_delete_course_modal"
+                        },
+                        {
+                            "handler": "setState",
+                            "params": {
+                                "target": "local",
+                                "deleteCourseTarget": null,
+                                "isDeletingCourse": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "props": {
+                "title": "$t:glitter-learning.admin.courses.delete_title",
+                "size": "sm"
+            },
+            "children": [
+                {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": {
+                        "className": "row-stack gap-4"
+                    },
+                    "children": [
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "text": "$t:glitter-learning.admin.courses.delete_description"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "props": {
+                                "className": "font-semibold"
+                            },
+                            "text": "{{_local.deleteCourseTarget?.title ?? ''}}"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "text": "$t:glitter-learning.admin.courses.delete_lesson_count|count={{_local.deleteCourseTarget?.lessons_count ?? 0}}"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "text": "$t:glitter-learning.admin.courses.delete_lesson_policy"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "P",
+                            "props": {
+                                "className": "text-sm text-red-600 dark:text-red-400"
+                            },
+                            "text": "$t:glitter-learning.admin.courses.delete_warning"
+                        },
+                        {
+                            "type": "basic",
+                            "name": "Div",
+                            "props": {
+                                "className": "modal-footer-buttons"
+                            },
+                            "children": [
+                                {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "actions": [
+                                        {
+                                            "type": "click",
+                                            "handler": "sequence",
+                                            "actions": [
+                                                {
+                                                    "handler": "closeModal",
+                                                    "target": "glitter_learning_delete_course_modal"
+                                                },
+                                                {
+                                                    "handler": "setState",
+                                                    "params": {
+                                                        "target": "local",
+                                                        "deleteCourseTarget": null
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "props": {
+                                        "type": "button",
+                                        "className": "btn btn-neutral",
+                                        "disabled": "{{_local.isDeletingCourse}}"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "basic",
+                                            "name": "Span",
+                                            "text": "$t:glitter-learning.common.cancel"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "actions": [
+                                        {
+                                            "type": "click",
+                                            "handler": "sequence",
+                                            "actions": [
+                                                {
+                                                    "handler": "setState",
+                                                    "params": {
+                                                        "target": "local",
+                                                        "isDeletingCourse": true
+                                                    }
+                                                },
+                                                {
+                                                    "handler": "apiCall",
+                                                    "target": "/api/modules/glitter-learning/admin/courses/{{_local.deleteCourseTarget?.slug}}",
+                                                    "auth_required": true,
+                                                    "params": {
+                                                        "method": "DELETE"
+                                                    },
+                                                    "onSuccess": [
+                                                        {
+                                                            "handler": "setState",
+                                                            "params": {
+                                                                "target": "local",
+                                                                "isDeletingCourse": false,
+                                                                "deleteCourseTarget": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "closeModal",
+                                                            "target": "glitter_learning_delete_course_modal"
+                                                        },
+                                                        {
+                                                            "handler": "toast",
+                                                            "params": {
+                                                                "type": "success",
+                                                                "message": "$t:glitter-learning.admin.courses.deleted"
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "refetchDataSource",
+                                                            "params": {
+                                                                "dataSourceId": "courses"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "onError": [
+                                                        {
+                                                            "handler": "setState",
+                                                            "params": {
+                                                                "target": "local",
+                                                                "isDeletingCourse": false
+                                                            }
+                                                        },
+                                                        {
+                                                            "handler": "toast",
+                                                            "params": {
+                                                                "type": "error",
+                                                                "message": "{{error.errors?.course?.[0] ?? error.message ?? '$t:glitter-learning.common.delete_failed'}}"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "props": {
+                                        "type": "button",
+                                        "lockRepeatClick": true,
+                                        "className": "btn btn-danger",
+                                        "disabled": "{{_local.isDeletingCourse}}"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "basic",
+                                            "name": "Span",
+                                            "text": "$t:glitter-learning.admin.courses.delete_confirm"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

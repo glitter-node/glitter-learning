@@ -1,0 +1,21 @@
+{
+    "name": "modules/glitter-learning",
+    "description": "Glitter Learning module for Gnuboard7",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Glitter\\Learning\\": "src/",
+            "Modules\\Glitter\\Learning\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Glitter\\Learning\\Tests\\": "tests/"
+        }
+    }
+}

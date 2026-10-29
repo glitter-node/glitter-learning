@@ -1,0 +1,265 @@
+{
+    "version": "1.0.2",
+    "layout_name": "lesson",
+    "extends": "_user_base",
+    "meta": {
+        "title": "$t:glitter-learning.user.lessons.title",
+        "auth_required": true
+    },
+    "data_sources": [
+        {
+            "id": "lessonData",
+            "type": "api",
+            "endpoint": "/api/modules/glitter-learning/learning/courses/{{route.course}}/lessons/{{route.lesson}}",
+            "method": "GET",
+            "auto_fetch": true,
+            "auth_required": true
+        }
+    ],
+    "slots": {
+        "content": [
+            {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                    "className": "glitter-learning-user-shell",
+                    "role": "main"
+                },
+                "children": [
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "glitter-learning-user-page-header"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "Div",
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "H1",
+                                        "text": "{{lessonData?.data?.lesson?.title ?? '$t:glitter-learning.user.lessons.title'}}"
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "P",
+                                        "text": "{{lessonData?.data?.course?.title ?? ''}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/learning/courses/{{route.course}}",
+                                    "className": "glitter-learning-user-button"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.user.lessons.course_back"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "glitter-learning-user-card",
+                            "aria-labelledby": "lesson-progress-heading"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "glitter-learning-user-actions"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "H2",
+                                                "props": {
+                                                    "id": "lesson-progress-heading"
+                                                },
+                                                "text": "$t:glitter-learning.user.lessons.learning_progress"
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "P",
+                                                "text": "{{lessonData?.data?.progress?.progress_percent ?? 0}}%"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "props": {
+                                            "className": "glitter-learning-user-badge"
+                                        },
+                                        "text": "{{lessonData?.data?.completed ? $t('glitter-learning.user.lessons.completed') : (lessonData?.data?.lesson?.is_required ? $t('glitter-learning.user.lessons.required') : $t('glitter-learning.user.lessons.optional'))}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "glitter-learning-progress",
+                                    "role": "progressbar",
+                                    "aria-valuenow": "{{lessonData?.data?.progress?.progress_percent ?? 0}}",
+                                    "aria-valuemin": "0",
+                                    "aria-valuemax": "100"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "{{lessonData?.data?.progress?.progress_percent ?? 0}}%"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "glitter-learning-user-card",
+                            "aria-labelledby": "lesson-content-heading"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "H2",
+                                "props": {
+                                    "id": "lesson-content-heading"
+                                },
+                                "text": "$t:glitter-learning.user.lessons.content"
+                            },
+                            {
+                                "type": "composite",
+                                "name": "HtmlContent",
+                                "props": {
+                                    "className": "glitter-learning-user-content",
+                                    "content": "{{lessonData?.data?.lesson?.body ?? ''}}",
+                                    "isHtml": true
+                                }
+                            },
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "if": "{{lessonData?.data?.lesson?.media_reference}}",
+                                "props": {
+                                    "href": "{{lessonData?.data?.lesson?.media_reference}}",
+                                    "target": "_blank",
+                                    "rel": "noopener noreferrer",
+                                    "className": "glitter-learning-user-button"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.user.lessons.media"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "glitter-learning-user-actions"
+                        },
+                        "children": [
+                            {
+                                "type": "basic",
+                                "name": "A",
+                                "props": {
+                                    "href": "/learning/courses/{{route.course}}",
+                                    "className": "glitter-learning-user-button"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.user.lessons.course_back"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "Button",
+                                "if": "{{!lessonData?.data?.completed}}",
+                                "actions": [
+                                    {
+                                        "type": "click",
+                                        "handler": "apiCall",
+                                        "target": "/api/modules/glitter-learning/learning/courses/{{route.course}}/lessons/{{route.lesson}}/complete",
+                                        "auth_required": true,
+                                        "params": {
+                                            "method": "POST"
+                                        },
+                                        "onSuccess": [
+                                            {
+                                                "handler": "toast",
+                                                "params": {
+                                                    "type": "success",
+                                                    "message": "$t:glitter-learning.user.lessons.complete_success"
+                                                }
+                                            },
+                                            {
+                                                "handler": "refetchDataSource",
+                                                "params": {
+                                                    "dataSourceId": "lessonData"
+                                                }
+                                            }
+                                        ],
+                                        "onError": {
+                                            "handler": "toast",
+                                            "params": {
+                                                "type": "error",
+                                                "message": "{{error.message ?? '$t:glitter-learning.common.request_failed'}}"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "props": {
+                                    "type": "button",
+                                    "lockRepeatClick": true,
+                                    "className": "glitter-learning-user-button"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:glitter-learning.user.lessons.complete"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "name": "Span",
+                                "if": "{{lessonData?.data?.completed}}",
+                                "props": {
+                                    "className": "glitter-learning-user-badge"
+                                },
+                                "text": "$t:glitter-learning.user.lessons.completed"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,67 @@
+<layout name="admin_course_list" version="1.0.1" extends="_admin_base">
+  <meta title="$t:glitter-learning.admin.courses.title" description="$t:glitter-learning.admin.courses.description"/>
+  <permissions><permission>glitter-learning.courses.read</permission></permissions>
+  <data-source id="courses" type="api" endpoint="/api/modules/glitter-learning/admin/courses" method="GET" :auto_fetch="true" :auth_required="true">
+    <params page="{{query.page}}" status="{{query.status}}" search="{{query.search}}"/>
+  </data-source>
+  <init-local>
+    <field name="deleteCourseTarget" :value="null"/>
+    <field name="isDeletingCourse" :value="false"/>
+  </init-local>
+  <slot name="content">
+    <div class="admin-page-content-fluid">
+      <page-header data-type="composite" title="$t:glitter-learning.admin.courses.title" description="$t:glitter-learning.admin.courses.description"><a href="/admin/learning/completions" class="btn btn-neutral"><span>$t:glitter-learning.admin.completions.title</span></a><a href="/admin/learning/courses/create" class="btn btn-primary"><span>$t:glitter-learning.admin.courses.create</span></a></page-header>
+      <div class="admin-card">
+        <empty-state data-type="composite" data-if="{{courses !== undefined &amp;&amp; (courses?.data?.data ?? []).length === 0}}" iconName="graduation-cap" title="$t:glitter-learning.admin.courses.empty_title" description="$t:glitter-learning.admin.courses.empty_description" class="py-12"><a href="/admin/learning/courses/create" class="btn btn-primary"><span>$t:glitter-learning.admin.courses.create</span></a></empty-state>
+        <data-grid data-if="{{(courses?.data?.data ?? []).length > 0}}" data-type="composite" :data-blur-until-loaded="true" data="{{courses?.data?.data ?? []}}" idField="id" rowLabelField="title" emptyMessage="" :responsiveBreakpoint="768" :pagination="true" :serverSidePagination="true" serverCurrentPage="{{courses?.data?.current_page ?? 1}}" serverTotalPages="{{courses?.data?.last_page ?? 1}}" pageHref="/admin/learning/courses?page={page}" :pageHrefMergeQuery="true" actionsColumnHeader="$t:glitter-learning.common.actions">
+          <column field="title" header="$t:glitter-learning.admin.courses.title_field"><cell><div class="flex flex-wrap items-center gap-2"><a href="/admin/learning/courses/{{row.slug}}" class="font-semibold text-blue-600 hover:underline dark:text-blue-400">{{row.title}}</a><a href="/admin/learning/courses/{{row.slug}}/edit" class="btn btn-sm btn-neutral"><span>$t:glitter-learning.common.edit</span></a><button type="button" class="btn btn-sm btn-danger" disabled="{{_local.isDeletingCourse}}"><on type="click"><set-state target="local" deleteCourseTarget="{{row}}" :isDeletingCourse="false"/><open-modal target="glitter_learning_delete_course_modal"/></on><span>$t:glitter-learning.admin.courses.delete</span></button></div></cell></column>
+          <column field="slug" header="$t:glitter-learning.admin.courses.slug"><cell><code class="text-xs">{{row.slug}}</code></cell></column>
+          <column field="status" header="$t:glitter-learning.admin.courses.status"><cell><status-badge data-type="composite" status="{{row.status === 'published' ? 'success' : (row.status === 'archived' ? 'default' : 'warning')}}" label="{{row.status === 'published' ? $t('glitter-learning.admin.courses.published') : (row.status === 'archived' ? $t('glitter-learning.admin.courses.archived') : $t('glitter-learning.admin.courses.draft'))}}" :showIcon="false"/></cell></column>
+          <column field="lessons_count" header="$t:glitter-learning.admin.courses.lessons"><cell><span>{{row.lessons_count ?? 0}}</span><span class="ml-1">$t:glitter-learning.admin.courses.lessons</span></cell></column>
+          <column field="enrollments_count" header="$t:glitter-learning.admin.courses.learners"><cell><span>$t:glitter-learning.admin.courses.learner_count|count={{row.enrollments_count ?? 0}}</span></cell></column>
+        </data-grid>
+      </div>
+    </div>
+  </slot>
+  <modal>
+    <modal data-type="composite" data-ref="glitter_learning_delete_course_modal" title="$t:glitter-learning.admin.courses.delete_title" size="sm">
+      <on type="click" event="onClose">
+        <close-modal target="glitter_learning_delete_course_modal"/>
+        <set-state target="local" :deleteCourseTarget="null" :isDeletingCourse="false"/>
+      </on>
+      <div class="row-stack gap-4">
+        <p>$t:glitter-learning.admin.courses.delete_description</p>
+        <p class="font-semibold">{{_local.deleteCourseTarget?.title ?? ''}}</p>
+        <p>$t:glitter-learning.admin.courses.delete_lesson_count|count={{_local.deleteCourseTarget?.lessons_count ?? 0}}</p>
+        <p>$t:glitter-learning.admin.courses.delete_lesson_policy</p>
+        <p class="text-sm text-red-600 dark:text-red-400">$t:glitter-learning.admin.courses.delete_warning</p>
+        <div class="modal-footer-buttons">
+          <button type="button" class="btn btn-neutral" disabled="{{_local.isDeletingCourse}}">
+            <on type="click"><close-modal target="glitter_learning_delete_course_modal"/><set-state target="local" :deleteCourseTarget="null"/></on>
+            <span>$t:glitter-learning.common.cancel</span>
+          </button>
+          <button type="button" :lockRepeatClick="true" class="btn btn-danger" disabled="{{_local.isDeletingCourse}}">
+            <on type="click">
+              <sequence>
+                <set-state target="local" :isDeletingCourse="true"/>
+                <api-call :auth_required="true" target="/api/modules/glitter-learning/admin/courses/{{_local.deleteCourseTarget?.slug}}" method="DELETE">
+                  <success>
+                    <set-state target="local" :isDeletingCourse="false" :deleteCourseTarget="null"/>
+                    <close-modal target="glitter_learning_delete_course_modal"/>
+                    <toast type="success" message="$t:glitter-learning.admin.courses.deleted"/>
+                    <refetch-data-source dataSourceId="courses"/>
+                  </success>
+                  <fail>
+                    <set-state target="local" :isDeletingCourse="false"/>
+                    <toast type="error" message="{{error.errors?.course?.[0] ?? error.message ?? '$t:glitter-learning.common.delete_failed'}}"/>
+                  </fail>
+                </api-call>
+              </sequence>
+            </on>
+            <span>$t:glitter-learning.admin.courses.delete_confirm</span>
+          </button>
+        </div>
+      </div>
+    </modal>
+  </modal>
+</layout>

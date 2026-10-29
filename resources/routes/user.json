@@ -1,0 +1,9 @@
+{
+    "version": "1.1.0",
+    "routes": [
+        {"path": "*/learning", "layout": "course_list", "auth_required": false, "meta": {"title": "$t:glitter-learning.user.courses.title"}},
+        {"path": "*/learning/courses/:course", "layout": "course_detail", "auth_required": false, "meta": {"title": "$t:glitter-learning.user.courses.detail"}},
+        {"path": "*/learning/courses/:course/lessons/:lesson", "layout": "lesson", "auth_required": true, "meta": {"title": "$t:glitter-learning.user.lessons.title"}},
+        {"path": "*/learning/me", "layout": "my_learning", "auth_required": true, "meta": {"title": "$t:glitter-learning.user.my_learning.title"}}
+    ]
+}
